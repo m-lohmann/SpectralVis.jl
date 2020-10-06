@@ -9,8 +9,13 @@ function cmf(::Type{CIE31},λ::Real)
     return CIE31(λ,x,y,z)
 end
 
+"""
+`cmf(::Type{CIE31})`
+
+Returns the full multispectral CIE1931 color matching function from 360.0 to 830.0 nm in 1 nm steps.
+"""
 function cmf(::Type{CIE31})
-    return CIE31(Vector(360.0:1.0:830.0),CMF31[:,1],CMF31[:,2],CMF31[:,3])
+    return CIE31(collect(360.0:1.0:830.0),CMF31[:,1],CMF31[:,2],CMF31[:,3])
 end
 
 function cmf(::Type{CIE64},λ::Real)
@@ -22,7 +27,7 @@ function cmf(::Type{CIE64},λ::Real)
 end
 
 function cmf(::Type{CIE64})
-    return CIE64(Vector(380.0:1:780.0),CMF64[:,1],CMF64[:,2],CMF64[:,3])
+    return CIE64(collect(380.0:1:780.0),CMF64[:,1],CMF64[:,2],CMF64[:,3])
 end
 
 """
