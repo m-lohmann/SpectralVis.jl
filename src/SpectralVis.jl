@@ -9,7 +9,7 @@ module SpectralVis
             reflectance_spec, i_reflectance_spec,
             transmittance_spec, i_transmittance_spec,
             cmf,
-            normalize_spec, block_spec, led_spec, led, ghelp
+            normalize_spec, block_spec, led_spec, led, ghelp,
             MarsSkyOpportunity, caltarget,
             Pancam_L2,Pancam_L3,Pancam_L4,Pancam_L5,Pancam_L6,Pancam_L7,
             CMF31, CMF64, CMF31_J, CMF31_JV, CMF06_2, CMF06_10
