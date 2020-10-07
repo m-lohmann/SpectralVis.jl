@@ -43,12 +43,12 @@ end
 LED function
 """
 function led(λ,λ0,Δλ1_2)
-    s_led = (g(λ,λ0,Δλ1_2) + 2.0 * g(λ,λ0,Δλ1_2)^5.0)/3.0
+    s_led = (ghelp(λ,λ0,Δλ1_2) + 2.0 * ghelp(λ,λ0,Δλ1_2)^5.0)/3.0
 end
 
 """
 LED helper function
 """
-function g(λ,λ0,Δλ1_2)
-    g = exp(-((λ-λ0)/Δλ1_2)^2.0)
+function ghelp(λ,λ0,Δλ1_2)
+    ghelp = exp(-((λ-λ0)/Δλ1_2)^2.0)
 end

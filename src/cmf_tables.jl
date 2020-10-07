@@ -1,57 +1,6 @@
 
-"""
-    colormatch(wavelength)
-    colormatch(matchingfunction, wavelength)
-
-Evaluate the CIE standard observer color match function.
-
-# Arguments
-
-- matchingfunction (optional): a type used to specify the matching function. Choices include:
-
-- - `CIE1931_CMF` (the default, the CIE 1931 2° matching function)
-- - `CIE1964_CMF` (the CIE 1964 10° color matching function)
-- - `CIE1931J_CMF` (Judd adjustment to `CIE1931_CMF`)
-- - `CIE1931JV_CMF` (Judd-Vos adjustment to `CIE1931_CMF`)
-
-- wavelength: Wavelength of stimulus in nanometers.
-
-Returns the XYZ value of perceived color.
-"""
-function colormatch(wavelen::Real)
-    return colormatch(CIE1931_CMF, wavelen)
-end
-
-
-@deprecate cie_color_match colormatch
-
-
-# Interpolate between values in a cmf table, where the table starts
-# at `start` nm and has `step` nm between entries.
-function interpolate_table(tbl, start, step, wavelen)
-    n = size(tbl, 1)
-    stop = start + step * (n - 1)
-    i = (wavelen - start) / step
-
-    a = floor(Integer, i) + 1
-    ac = 1 <= a <= n ? tbl[a,:] : [0.0, 0.0, 0.0]
-
-    b = ceil(Integer, i) + 1
-    bc = 1 <= b <= n ? tbl[b,:] : [0.0, 0.0, 0.0]
-
-    p = i % 1.0
-    ac = p * bc + (1.0 - p) * ac
-
-    return XYZ(ac[1], ac[2], ac[3])
-end
-
-
-function colormatch(::Type{CIE1931_CMF}, wavelen::Real)
-    return interpolate_table(cie1931_cmf_table, 360.0, 1.0, wavelen)
-end
-
 # CIE 1931 2° color matching function, 1nm increments starting at 360nm
-const cmf_cie31 =
+const CMF31 =
     [0.000129900000  0.000003917000  0.000606100000;
      0.000145847000  0.000004393581  0.000680879200;
      0.000163802100  0.000004929604  0.000765145600;
@@ -524,13 +473,8 @@ const cmf_cie31 =
      0.000001341977  0.000000484612  0.000000000000;
      0.000001251141  0.000000451810  0.000000000000];
 
-
-function colormatch(::Type{CIE1964_CMF}, wavelen::Real)
-    return interpolate_table(cie1964_cmf_table, 360.0, 1.0, wavelen)
-end
-
 # CIE 1964 10° color matching function, 1nm increments starting at 360nm
-const cmf_cie64 =
+const CMF64 =
     [0.000000122200  0.000000013398  0.000000535027;
      0.000000185138  0.000000020294  0.000000810720;
      0.000000278830  0.000000030560  0.000001221200;
@@ -1004,12 +948,8 @@ const cmf_cie64 =
      0.000001553140  0.000000629700  0.000000000000]
 
 
-function colormatch(::Type{CIE1931J_CMF}, wavelen::Real)
-    return interpolate_table(cie1931j_cmf_table, 370.0, 10.0, wavelen)
-end
-
 # Judd adjustment to the CIE 1931 2° CMF, 10nm increments starting at 370nm
-const cmf_cie31j =
+const CMF31_J =
     [0.0008  0.0001  0.0046;
      0.0045  0.0004  0.0224;
      0.0201  0.0015  0.0925;
@@ -1052,14 +992,8 @@ const cmf_cie31j =
      0.0002  0.0001  0.0000;
      0.0001  0.0000  0.0000]
 
-
-
-function colormatch(::Type{CIE1931JV_CMF}, wavelen::Real)
-    return interpolate_table(cie1931jv_cmf_table, 380.0, 5.0, wavelen)
-end
-
 # Judd-Vos adjustment to the CIE 1931 2° CMF, 5nm increments starting at 380nm
-const cmf_cie31jv =
+const CMF31_JV =
     [2.689900e-003  2.000000e-004  1.226000e-002;
      5.310500e-003  3.955600e-004  2.422200e-002;
      1.078100e-002  8.000000e-004  4.925000e-002;
@@ -1167,11 +1101,7 @@ const cmf_cie31jv =
 # To be tested: differences between shortened and original dataset
 #               testing of the effect of extrapolation down to 380 nm
 
-function colormatch(::Type{CIE2006_2_CMF}, wavelen::Real)
-    return interpolate_table(cie2006_2deg_xyz_cmf_table, 380.0, 1.0, wavelen)
-end
-
-const cmf_cie06_2=
+const CMF06_2=
     [0.000000e+00  0.000000e+00  0.000000e+00;
      0.000000e+00  0.000000e+00  0.000000e+00;
      0.000000e+00  0.000000e+00  0.000000e+00;
@@ -1580,12 +1510,7 @@ const cmf_cie06_2=
 # Transformed from the CIE (2006) 2° LMS cone fundamentals[*]
 # [*] http://cvrl.ioo.ucl.ac.uk/database/text/cienewxyz/cie2012xyz10.htm
 
-
-function colormatch(::Type{CIE2006_10_CMF}, wavelen::Real)
-    return interpolate_table(cie2006_10deg_xyz_cmf_table, 380.0, 1.0, wavelen)
-end
-
-const cmf_cie06_10=
+const CMF06_10=
     [0.000000e+00  0.000000e+00  0.000000e+00;
      0.000000e+00  0.000000e+00  0.000000e+00;
      0.000000e+00  0.000000e+00  0.000000e+00;
