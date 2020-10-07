@@ -32,11 +32,11 @@ simulated LED spectrum
 function led_spec(λmin,λmax,Δλ,λ0,Δλ1_2)
     λ = collect(λmin:Δλ:λmax)
     n = length(λ)
-    s = zeros(n)
+    l = zeros(n)
     for i in 1:n
-        s[i] = led(λ[i],λ0,Δλ1_2)
+        l[i] = led(λ[i],λ0,Δλ1_2)
     end
-    return ILSpec(λ,s)
+    return ILSpec(λ,l)
 end
 
 """

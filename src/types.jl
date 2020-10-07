@@ -10,7 +10,15 @@ Luminance spectrum
 struct LSpec <: SPD
     λs::Real  # start wavelength
     Δλ::Real
-    s::Vector{Real}  #reflectance vector
+    l::Vector{Real}  #luminance vector
+end
+
+"""
+Irregular Reflectance spectrum
+"""
+struct ILSpec <: SPD
+    λ::Vector{Real}  #wavelength vector
+    l::Vector{Real}  #reflectance vector
 end
 
 """
