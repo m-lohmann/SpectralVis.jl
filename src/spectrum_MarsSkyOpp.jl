@@ -1,4 +1,4 @@
-MarsSkypOpportunity() = IRSpec(MarsSkyOpp[:,1],MarsSkyOpp[:,2])
+MarsSkyOpportunity() = IRSpec(MarsSkyOpp[:,1],MarsSkyOpp[:,2])
 
 const MarsSkyOpp=
    [359.818401937046	   0.14974358974359;

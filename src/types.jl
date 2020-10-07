@@ -1,5 +1,5 @@
 abstract type Spectrum end
-abstract type SPD <: Spectrum end #Spectral Power Distribution
+abstract type SPD <: Spectrum end #Spectral Power Distribution of luminous source
 abstract type STD <: Spectrum end #Spectral Transmittance Distribution
 abstract type Multispectral <: Spectrum end
 abstract type CMatch <: Multispectral end #Color Matching Functions
@@ -8,7 +8,7 @@ abstract type CMatch <: Multispectral end #Color Matching Functions
 Luminance spectrum
 """
 struct LSpec <: SPD
-    λs::Vector{Real}  #wavelength vector
+    λs::Real  # start wavelength
     Δλ::Real
     s::Vector{Real}  #reflectance vector
 end
@@ -34,10 +34,13 @@ end
 Transmittance spectrum
 """
 struct TSpec <: STD
-    λs::Vector{Real}  #wavelength vector
+    λs::Vector{Real}  #start wavelength
+    t::Vector{Real}  #transmittance vector at unit thickness
     Δλ::Real
-    t::Vector{Real}  #transmittance vector
-    T::Float64          #transmittance factor
+    D0::Real
+    D::Real
+    a::Float64       #absorption coefficient
+
 end
 
 """
