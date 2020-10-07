@@ -25,7 +25,7 @@ function block_spec(λmin,λmax,Δλ,λs,λe,mode=1)
 end
 
 """
-simulated LED spectrum
+LED spectrum simulation
 λ0 = peak wavelength
 Δλ1_2 = half spectral width
 """

@@ -4,6 +4,18 @@ abstract type STD <: Spectrum end #Spectral Transmittance Distribution
 abstract type Multispectral <: Spectrum end
 abstract type CMatch <: Multispectral end #Color Matching Functions
 
+abstract type SpecEnv end #global settings for spectral calculations
+
+struct SpecEnvironment <: SpecEnv
+    λmin
+    λmax
+    Δλ
+end
+
+function specenvironment(λmin,λmax,Δλ)
+    SpecEnvironment(λmin,λmax,Δλ)
+end
+
 """
 Luminance spectrum
 """
@@ -54,19 +66,19 @@ end
 """
 LMS cone fundamentals
 """
-struct LMS <: CMatch
+struct LMSCM <: CMatch
     λ::Vector{Real} #wavelength vector
     l::Vector{Real} #l cone matching function
     m::Vector{Real} #m cone matching function
     s::Vector{Real} #s cone matching function
 end
 
-struct XYZ <: CMatch
-    λ::Vector{Real} #wavelength vector
-    x::Vector{Real} #x_bar cone matching function
-    y::Vector{Real} #y_bar cone matching function
-    z::Vector{Real} #z_bar cone matching function
-end
+#struct XYZCM <: CMatch
+#    λ::Vector{Real} #wavelength vector
+#    x::Vector{Real} #x_bar cone matching function
+#    y::Vector{Real} #y_bar cone matching function
+#    z::Vector{Real} #z_bar cone matching function
+#end
 
 struct CIE31 <: CMatch
     λ::Vector{Real} #wavelength vector

@@ -3,9 +3,8 @@
 
 creates a regular illuminance spectrum of type `RSpec`
 """
-function luminance_spec(λs,Δλ,r)
-    λ=Vector{Real}(λs,)
-    return LSpec(λ,r)
+function luminance_spec(λs,Δλ,l)
+    return LSpec(λs,Δλ,l)
 end
 
 """
@@ -13,8 +12,8 @@ end
 
 irregular luminance spectrum of type `RSpec`
 """
-function i_luminance_spec(λ,r)
-    return LSpec(λ,r)
+function i_luminance_spec(λ,l)
+    return LSpec(λ,l)
 end
 
 """
@@ -22,8 +21,8 @@ end
 
 regular reflectance spectrum of type `RSpec`
 """
-function reflectance_spec(λ,r)
-    return RSpec(λ,r)
+function reflectance_spec(λ,Δλ,s)
+    return RSpec(λs,Δλ,s)
 end
 
 """
@@ -31,18 +30,18 @@ end
 
 irregular reflectance spectrum of type `RSpec`
 """
-function i_reflectance_spec(λ,r)
-    return RSpec(λ,r)
+function i_reflectance_spec(λ,s)
+    return IRSpec(λ,s)
 end
 
-"""
-`transmittancespec(λ::Vector{Float64},r::Vector{Float64})`
-
-regular transmittance spectrum
-"""
-function transmittancespec(λ,Δλ,D0,D,t)
-    return TSpec(collect(λ:Δλ:length(t),Δλ,D0,D,a,t))
-end
+#"""
+#`transmittancespec(λ::Vector{Float64},r::Vector{Float64})`
+#
+#regular transmittance spectrum
+#"""
+#function transmittancespec(λ,Δλ,D0,D,t)
+#    return TSpec(collect(λ:Δλ:length(t),Δλ,D0,D,a,t))
+#end
 
 function i_transmittance_spec()
 

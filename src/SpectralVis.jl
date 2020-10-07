@@ -14,7 +14,6 @@ module SpectralVis
             Pancam_L2,Pancam_L3,Pancam_L4,Pancam_L5,Pancam_L6,Pancam_L7,
             CMF31, CMF64, CMF31_J, CMF31_JV, CMF06_2, CMF06_10
 
-
     include("types.jl")
     include("spectral_functions.jl")
     include("multispectral_functions_cmf.jl")
