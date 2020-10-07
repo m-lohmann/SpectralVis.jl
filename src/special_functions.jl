@@ -34,7 +34,7 @@ function led_spec(λmin,λmax,Δλ,λ0,Δλ1_2)
     n = length(λ)
     s = zeros(n)
     for i in 1:n
-        s[n] = led(λ,λ0,Δλ1_2)
+        s[i] = led(λ[i],λ0,Δλ1_2)
     end
     return ILSpec(λ,s)
 end

@@ -14,18 +14,6 @@
 
 Returns the full multispectral matching function from 360.0 to 830.0 nm in 1 nm steps.
 """
-function cmf(CMF31)
-    return CIE31(collect(360.0:1.0:830.0),CMF31[:,1],CMF31[:,2],CMF31[:,3])
-end
-
-#function cmf(::Type{CIE64},λ::Real)
-#    380.0 < λ < 780.0 ? error("λ out of defined range for this CMF!") : nothing
-#    @inbounds x=CMF64[Int(λ-380.0)+1,1]
-#    @inbounds y=CMF64[Int(λ-380.0)+1,2]
-#    @inbounds z=CMF64[Int(λ-380.0)+1,3]
-#    return CIE64(λ,x,y,z)
-#end
-
 function cmf(table)
     if table == CMF31
         return CIE31(collect(360.0:1.0:830.0),CMF31[:,1],CMF31[:,2],CMF31[:,3])
