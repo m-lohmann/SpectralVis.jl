@@ -1,34 +1,74 @@
+__precompile__()
 module SpectralVis
     # Write your package code here.
-    import Base: convert
+    import Base.convert
     import Base: +, -, *, /
 
-    using Colors
+    using Reexport
+    @reexport using SSpline, Colors, Plots
 
-    export luminance_spec, i_luminance_spec,
-            reflectance_spec, i_reflectance_spec,
-            transmittance_spec, i_transmittance_spec,
-            cmf,
-            normalize_spec, block_spec, led_spec, led, ghelp,
-            MarsSkyOpportunity, caltarget,
-            Pancam_L2,Pancam_L3,Pancam_L4,Pancam_L5,Pancam_L6,Pancam_L7,
-            CMF31, CMF64, CMF31_J, CMF31_JV, CMF06_2, CMF06_10
+    export set_specenv, set_extrapolation_mode,
+            # spectral functions
+            i_luminance_spec,
+            i_reflectance_spec,
+            i_transmittance_spec,
+            cmf, cmfmat, normalize_spec, hardlimit_spec,
+            #spectral types
+            ILSpec,IRspec, ITSpec,
+            # special functions
+            normalize_spec, sconv, d_whitepoint,
+            # color matching function tables
+            CMF1931, CMF1931_J, CMF1931_JV,
+            CMF1964,
+            CMF2012_2, CMF2012_10,
+            # cone fundamentals
+            LMS2006_2, LMS2006_10,
+            #cmf types
+            CIE31, CIE31_J, CIE31_JV,
+            CIE64,
+            CIE12_2, CIE12_10,
+            LMS06_2, LMS06_10,
+            # spectra
+            mars_sky_opportunity, mer_caltarget,
+            pancam_L2, pancam_L3, pancam_Lpancam_L5, pancam_L6, pancam_L7,
+            # spectral generators
+            daylight_generator_table, block_spec, led_spec, led,
+            D_series_illuminant, D_series_whitepoint, D_series_luminance, blackbody_illuminant, blackbody_whitepoint,
+            # visualizations
+            gamut_vis, gamutslice,
+            #doodles
+            plottest, locustest,
+            plotmunsell, spec_color, spec_idx, munsell_specs, munsell_keys, munselldict, 
+            multiline, col, colv, sl, border, polar, getslice, sortslice
 
     include("types.jl")
+    include("conversions.jl")
     include("spectral_functions.jl")
-    include("multispectral_functions_cmf.jl")
+    include("cmf_functions.jl")
     include("special_functions.jl")
-    include("spectralops.jl")
+    include("spectral_generators.jl")
+    include("spectral_operators.jl")
+    include("../spectra/munsell_index.jl")
+    include("readmunsell.jl")
 
-    # Color matching function tables
+    #tables and other data
     include("cmf_tables.jl")
+    include("spectral_generator_tables.jl")
 
     # Real world spectral data
+    specpath="../spectra/"
     # MER Pancam data:
     # Mars Sky spectrum measured by Opportunity
-    include("spectrum_MarsSkyOpp.jl")
+    include(specpath*"spectrum_MarsSkyOpp.jl")
     # Spirit/Opportunity calibration target spectra
-    include("spectrum_MERCaltarget.jl")
+    include(specpath*"spectrum_MERCaltarget.jl")
     # Pancam color filter spectra
-    include("spectrum_Pancam.jl")
+    include(specpath*"spectrum_Pancam.jl")
+    include(specpath*"spectrum_MacBeth.jl")
+    # visualizations
+    include("visualizations.jl")
+    # doodles
+    include("locustest.jl")
+    include("lmsconversion.jl")
+    include("col.jl")
 end
