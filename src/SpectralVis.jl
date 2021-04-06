@@ -7,23 +7,29 @@ module SpectralVis
     using Reexport
     @reexport using SSpline, Colors, Plots
 
-    export set_specenv, set_extrapolation_mode,
+    export  set_specenv, set_extrapolation, 
+            # spectral operators
+            ×,
             # spectral functions
-            i_luminance_spec,
-            i_reflectance_spec,
-            i_transmittance_spec,
+            luminance_spec,
+            reflectance_spec,
+            transmittance_spec,
             cmf, cmfmat, normalize_spec, hardlimit_spec,
-            #spectral types
-            ILSpec,IRspec, ITSpec,
+            reinterpolate,
+            # environment types
+            SPECENV, SpecEnvironment,
+            set_specenv, set_extrapolation, set_limits, set_extrap,
+            # spectral types
+            LSpec, RSpec, TSpec,
             # special functions
-            normalize_spec, sconv, d_whitepoint,
+            normalize_spec, adapt_spec, sconv, d_whitepoint, spline_extrap, shift_spec,
             # color matching function tables
             CMF1931, CMF1931_J, CMF1931_JV,
             CMF1964,
             CMF2012_2, CMF2012_10,
             # cone fundamentals
             LMS2006_2, LMS2006_10,
-            #cmf types
+            # multispectral types (CMFs)
             CIE31, CIE31_J, CIE31_JV,
             CIE64,
             CIE12_2, CIE12_10,
@@ -36,12 +42,14 @@ module SpectralVis
             D_series_illuminant, D_series_whitepoint, D_series_luminance, blackbody_illuminant, blackbody_whitepoint,
             # visualizations
             gamut_vis, gamutslice,
-            #doodles
+            # doodles
             plottest, locustest,
             plotmunsell, spec_color, spec_idx, munsell_specs, munsell_keys, munselldict, 
             multiline, col, colv, sl, border, polar, getslice, sortslice
 
-    include("types.jl")
+    include("spectral_types.jl")
+    include("multispectral_types.jl")
+    include("environment_types.jl")
     include("conversions.jl")
     include("spectral_functions.jl")
     include("cmf_functions.jl")

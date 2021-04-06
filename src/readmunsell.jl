@@ -16,7 +16,7 @@ function spec_idx(idx::Int,spec)
     n=421
     i=(idx-1)*n+1
     y=spec[i:i+n-1]
-    IRSpec(collect(380:800),y)
+    RSpec(collect(380:800),y)
 end
 
 function spec_color(col::AbstractString,colordict::AbstractString)

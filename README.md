@@ -36,8 +36,6 @@ Spectrum
 │     ├─ CIE64_JV
 │     └─ LMSCM
 ├─ SPD
-│  ├─ ILSpec
-│  ├─ IRSpec
 │  ├─ LSpec
 │  └─ RSpec
 └─ STD
@@ -66,14 +64,12 @@ The branch `Multispectral` contains all types that include more than only one sp
 
 ```julia
 └─ SPD
-   ├─ ILSpec
-   ├─ IRSpec
    ├─ LSpec
    └─ RSpec
 ```
 
-The branch `SPD` contains all spectral types that include only a single spectral power distribution. This includes both reflectance and luminance spectra. Both luminance and reflectance spectra exist as regular and irregular SPD subtypes.
-Regular spectra begin with the letter `R`, irregular spectra begin with the letter `I`. The second letter describes the type of the SPD, either reflectance `R` or luminance `L`.
+The branch `SPD` contains all spectral types that include only a single **s**pectral **p**ower **d**istribution. This includes both reflectance and luminance spectra.
+The first letter describes the type of the SPD, either reflectance `R` or luminance `L`.
 
 ### STD type subtree
 
@@ -82,7 +78,7 @@ Regular spectra begin with the letter `R`, irregular spectra begin with the lett
   └─ TSpec
 ```
 
-The STD subtree contains the special case of transmission spectra.
+The STD subtree (spectral transmission distribution) contains the special case of transmission spectra.
 
 ## Spectral datasets
 
@@ -100,7 +96,7 @@ File:           `spectrum_MarsSkyOpp.jl`
 
 Function call:  `mars_sky_opportunity()`
 
-Object type:    `ILSpec`
+Object type:    `LSpec`
 
 Dataset:        `const MarsSkyOpp`
 
@@ -112,7 +108,7 @@ File:           `spectrum_MERCaltarget.jl`
 
 Function call:  `mer_caltarget(color::AbstractString)`
 
-Object type:    `SpectralVis.IRSpec`
+Object type:    `RSpec`
 
 Dataset:        `const MER_caltarget_<color_name>`
 
@@ -143,7 +139,7 @@ File:           `spectrum_Pancam.jl`
 
 Function call:  `pancam_L<filter number>`
 
-Object type:    `SpectralVis.ILSpec` (preliminary type, will be changed to `ITSpec`)
+Object type:    `LSpec` (preliminary type, will be changed to `TSpec`)
 
 Dataset:        `const Pancam_L<filter number>`
 
@@ -155,5 +151,5 @@ Example:
 
 ```julia
 julia> pancam_L4()
-SpectralVis.IRSpec(Real[580.0, 584.670912951168, 588.067940552017, 590.615711252654, 593.588110403397, 595.711252653928, 596.985138004246, 597.409766454352, 598.259023354565, 600.382165605096  …  610.148619957537, 611.847133757962, 612.696390658174, 613.970276008493, 616.093418259023, 618.216560509554, 619.915074309979, 622.462845010616, 625.010615711253, 630.106157112527], Real[0.0, 0.0105932203389831, 0.0444915254237288, 0.152542372881356, 0.563559322033898, 0.930084745762712, 0.98728813559322, 0.997881355932203, 1.0, 0.991525423728814  …  0.629237288135593, 0.425847457627119, 0.298728813559322, 0.199152542372881, 0.103813559322034, 0.0593220338983051, 0.0338983050847458, 0.0169491525423729, 0.00635593220338983, 0.0])
+SpectralVis.RSpec(Real[580.0, 584.670912951168, 588.067940552017, 590.615711252654, 593.588110403397, 595.711252653928, 596.985138004246, 597.409766454352, 598.259023354565, 600.382165605096  …  610.148619957537, 611.847133757962, 612.696390658174, 613.970276008493, 616.093418259023, 618.216560509554, 619.915074309979, 622.462845010616, 625.010615711253, 630.106157112527], Real[0.0, 0.0105932203389831, 0.0444915254237288, 0.152542372881356, 0.563559322033898, 0.930084745762712, 0.98728813559322, 0.997881355932203, 1.0, 0.991525423728814  …  0.629237288135593, 0.425847457627119, 0.298728813559322, 0.199152542372881, 0.103813559322034, 0.0593220338983051, 0.0338983050847458, 0.0169491525423729, 0.00635593220338983, 0.0])
 ```

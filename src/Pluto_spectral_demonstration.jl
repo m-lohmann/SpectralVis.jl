@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.12.9
+# v0.14.0
 
 using Markdown
 using InteractiveUtils
@@ -32,10 +32,10 @@ md"**SpectralVis** contains (almost) everything you need for spectral calculatio
 md"The **Colors** package is also needed"
 
 # ╔═╡ 79763630-2461-11eb-0b0d-15b00898c512
-md"We also would like to do some plots, so we also use the **Plots** package with the **PyPlot** frontend."
+md"We also would like to do some plots, so we also use the **Plots** package with the **PyPlot** backend."
 
 # ╔═╡ 0d1268b0-2461-11eb-15a9-87ca552b10c5
-md"Then we need the spectral spline package **SSplines.jl**, which is a specialized spline package for spectral calculations. Apart from specialized functionality, it’s also faster than the **Interpolations.jl** package."
+md"Then we need the spectral spline package **SSpline**, which is a specialized spline package for spectral calculations. Apart from specialized functionality, it’s also faster than the **Interpolations** package."
 
 # ╔═╡ 1afb7e20-245d-11eb-1ca8-9da92491cd50
 md"Now we’re ready to have some fun!"
@@ -49,19 +49,31 @@ md"One option is to create a black body illuminant. Let’s say our light source
 # ╔═╡ 5216c132-2462-11eb-11ef-259ba512e80a
 bb6500K = blackbody_illuminant(6500,390,1,830)
 
+# ╔═╡ 60284748-a78f-4dfa-9927-18ad85bdf5d0
+md"What is the type of the spectrum?"
+
 # ╔═╡ ad2414b2-2462-11eb-3ea5-955a5a918a30
 typeof(bb6500K)
 
+# ╔═╡ 27bae2a1-2dc1-4a75-84ed-d329ce62abea
+md"`LSpec` stands for Luminance Spectrum. We are dealing with a light source."
+
+# ╔═╡ 437e5e6d-1469-4767-a0a9-8fed5ecf6250
+md"Show the wavelengths at which this spectrum is sampled:"
+
 # ╔═╡ d99b2330-2462-11eb-2bee-6b79c56cf0cf
 bb6500K.λ
+
+# ╔═╡ 7db83947-d5dd-4a3a-9f63-efe1da7eb26c
+md"And the sampled luminance values:"
 
 # ╔═╡ e34ef68e-2462-11eb-394c-5712ac9de6da
 bb6500K.l
 
 # ╔═╡ e8969630-2462-11eb-3c02-996a99d88691
-md"As you can see the ILSpec object has two members: λ and l.
+md"So, the `LSpec` struct has two fields: λ and l.
 
-`λ` contains the sampled wavelengths in *nm*, `l` contains the sampled *luminance* at the sampled wavelengths. For reflectance spectra of type `IRSpec`, these are `λ` and `r` (reflectance)."
+`λ` contains the sampled wavelengths in *nm*, `l` contains the sampled *luminance* at the sampled wavelengths. For reflectance spectra of type `RSpec`, these are `λ` and `r` (reflectance)."
 
 # ╔═╡ f24e2d8e-2477-11eb-3a27-dfebdfc43440
 md"Let’s plot the spectrum of our light source:"
@@ -70,16 +82,10 @@ md"Let’s plot the spectrum of our light source:"
 plot(bb6500K.λ,bb6500K.l,labels=false)
 
 # ╔═╡ 2c7f7c80-2478-11eb-1728-a1ab0b5ef106
-md"Whoa! The luminance values are crazy high! That’s because of the units `[J/m³/s]`. It’s easy to mitigate that. Let’s normalize this spectrum to a peak value of 1.0:"
+md"Whoa! The luminance values are crazy high! That’s because of the units `[J/m³/s]`. It’s easy to mitigate that. Let’s normalize this spectrum to a peak value of 1.0. To normalize a spectrum, use the `normalize_spec` function as follows:"
 
 # ╔═╡ 00a64130-2463-11eb-1ed2-29a671508315
 bb65=normalize_spec(bb6500K)
-
-# ╔═╡ 0edd04a0-2463-11eb-0a29-c50a447572d8
-md"Let’s check the result:"
-
-# ╔═╡ 18b5ec30-2463-11eb-1f50-9b9fc218273e
-bb65.l
 
 # ╔═╡ 1e781300-2463-11eb-2b3e-ff33d0043b07
 md"Let’s have a look at the spectrum in a graph:"
@@ -88,22 +94,22 @@ md"Let’s have a look at the spectrum in a graph:"
 plot(bb65.λ,bb65.l,labels=false)
 
 # ╔═╡ 47f2352e-2463-11eb-3976-d77c1624e204
-md"That looks much better! It’s convenient and common practice in color metrics to normalize illuminants to a value of 1."
+md"That looks much better! It’s convenient and common practice in color metrics to normalize illuminants to a peak value of 1."
 
 # ╔═╡ 60fc2740-247a-11eb-031a-8bef9409f862
-md"Another method, which is very useful, is using a CIE Daylight generator, which creates a daylight spectrum according to the CIE daylight standard. It produces a daylight spectrum, like *D65* or *D50*, according to a so-called *correlated color temperature*, also abbreviated as *CCT*. In our case we want a daylight with a CCT of 6500K, which is commonly abbreviated as *D65*:"
+md"Another useful method is using a CIE Daylight generator, which creates daylight spectra according to the CIE daylight standard. This mimics the spectral distribution of natural daylight spectra. `D_series_illuminant` produces daylight spectra, like *D65* or *D50*, according to a so-called *correlated color temperature*, also abbreviated as *CCT*. To create an illuminant with a CCT of 6500K, similar to the blackbody radiator, use the `D_series_illuminant` function as follows:"
 
 # ╔═╡ fdfa8220-2462-11eb-0cf8-c188ac491781
 d6500=D_series_illuminant(6500)
 
 # ╔═╡ 89f88560-2463-11eb-38be-eb669b15ab60
-md"Before we plot this D65 spectrum, let’s normalize it as well. The standard CIE daylight function generates spectra that are normalized to 100.0 at a wavelength of 555 nm, and the peak luminance is even higher."
+md"Before we plot this D65 spectrum, let’s normalize it as well. The standard CIE daylight function generates spectra that are normalized to a value 100.0 at a wavelength of 560 nm, which results in spectra with a spectral distribution that mimics the proper relative energy output of different D-series illuminants. For our purposes, let’s normalize the D65 spectrum:"
 
 # ╔═╡ 97598240-2463-11eb-0ec9-0be99eea414d
 d65=normalize_spec(d6500)
 
 # ╔═╡ d0a02310-2463-11eb-2788-5dcb718cf9cb
-md"Now we can plot it:"
+md"Now we can plot both spectra for comparison:"
 
 # ╔═╡ d811596e-2463-11eb-0de0-792feca7ffa0
 plot!(d65.λ,d65.l,labels=false)
@@ -112,22 +118,27 @@ plot!(d65.λ,d65.l,labels=false)
 md"Voilá! Looking good!"
 
 # ╔═╡ fe2f5850-2463-11eb-29a7-93f2db686897
-md"But we’d like both spectra to have the *same wavelength range*. And both should also have the *same spectral resolution*. The *d65* spectrum has a resolution of only 5 nm. Let’s change that!"
+md"But we’d like both spectra to have the *same wavelength range*. And both should also have the *same spectral resolution*. The *d65* spectrum has a resolution of only 5 nm. Let’s change that!
 
-# ╔═╡ 4232ff20-2464-11eb-14d4-c79999ab77bf
-md"Here, the *SSpline* package comes into play. Let’s use it to adapt the resolution and range of the *d65* spectrum:"
+For demonstration purposes, we will first take a short detour to the `SSpline` package. Let’s use it to adapt the resolution and range of the *d65* spectrum.
+Later, we’ll see a more convenient way to adapt spectra to arbitrary conditions, resolutions, etc.
+
+Now, let’s do it the `SSpline` way first:"
 
 # ╔═╡ 69e30fb0-2464-11eb-0066-d15aa8c969e3
-md"## Spline functions"
+md"## A quick look at the `SSpline` package"
 
 # ╔═╡ 9b44a9b0-2464-11eb-138b-0d9775344d9f
-md"First, we create a spline object. The Daylight illuminant generator creates linearly interpolated values, so we only need a linear spline object:"
+md"First, we create a spline object. The Daylight illuminant generator creates linearly interpolated values, so we don’t need to bother with any fancy spline interpolations in this case. We only need a linear spline:"
 
 # ╔═╡ c1a3a930-2464-11eb-1bef-996a6b7468f5
 d65spl = linearspline(d65.λ,d65.l)
 
 # ╔═╡ c77141b0-2464-11eb-1efa-a73f2a72b3b0
-md"As a result, we get an object of type *LinearSpline*. It contains all the spline coefficients at the knots of the spline, and the knots themselves."
+md"As a result, we get an object of type `LinearSpline`. It contains all the spline coefficients at the knots of the spline, and the knots themselves:"
+
+# ╔═╡ c5490aa0-254d-11eb-383c-adb08ba2eedf
+typeof(d65spl)
 
 # ╔═╡ 07995c00-2465-11eb-125c-b5a167e0fc90
 md"Now we want to interpolate this spline at certain values. For the black body illuminant we used the range `390:1:830`, and these are going to be our new `λ` values for the D65 illuminant as well:"
@@ -142,10 +153,10 @@ md"Now we create the new, interpolated values with the `interp` function. The fu
 lam,s=interp(d65spl,λ)
 
 # ╔═╡ e54233b0-2465-11eb-1f8d-2f087aa4d31e
-md"Now all that’s left is creating a new *Spectrum* type object containing these values. In our case we need to creat a luminance spectrum, because we want to create a light source:"
+md"Now all that’s left is creating a new *Spectrum* type object containing these values. In our case we need to create a luminance spectrum because we want the spectrum to be a light source:"
 
 # ╔═╡ 0c92e630-2466-11eb-20c4-9fe8bede9360
-d65f=ILSpec(lam,s)
+d65f=luminance_spec(lam,s)
 
 # ╔═╡ 1d179140-2466-11eb-2d71-11e9622e355b
 md"What does it look like in the graph?"
@@ -163,13 +174,13 @@ md"Excellent!"
 md"## Back to Spectra"
 
 # ╔═╡ f9023e30-2466-11eb-346f-8380306e6ab3
-md"There are nother ways to generate spectra. The function `led_spec` simulates the spectrum of a light emitting diode:"
+md"There are other ways to generate spectra. The function `led_spec` simulates the spectrum of a light emitting diode:"
 
 # ╔═╡ b9028080-2473-11eb-3bc2-91cb08806a45
 led=led_spec(390,830,1,455,30)
 
 # ╔═╡ dde6edf0-2473-11eb-2671-2b1f152e2ced
-md"Creates an LED spectrum in the range 390:1:830 nm, with the *peak wavelength* at 455 nm, and the *half spectral width* (bandwidth at 50% of peak intensity) of 30 nm. Let’s have a look at the spectrum:"
+md"Creates an LED spectrum in the range 390 to 830 nm, with a wavelength step width of 1 nm. The *peak wavelength* is at 455 nm, and the *half spectral width* (bandwidth at 50% of peak intensity) is 30 nm. Let’s have a look at the spectrum:"
 
 # ╔═╡ 62d4c690-2474-11eb-2665-c724b32a74f4
 plot!(led.λ,led.l,linestyle=:solid, labels=false)
@@ -208,6 +219,184 @@ bspec0=block_spec(390,830,1,410,570,1.0,1)
 # ╔═╡ 0c572270-2476-11eb-0972-89e9f7f99f3d
 plot!(bspec0.λ,bspec0.r,color=:black,linestyle=:dot, labels=false)
 
+# ╔═╡ b2a5b300-2505-11eb-1ecc-098dda235b36
+md"## Spectral environments, or how to adapt spectral properties"
+
+# ╔═╡ e880d120-255b-11eb-12d4-d945762279a1
+md"Let’s define a light source and a reflective surface. We use the spectrum of the Martian sky, as measured by the Opportunity rover, as light source:"
+
+# ╔═╡ 10fbabc0-255c-11eb-0225-fb05d87dd7f2
+light = mars_sky_opportunity()
+
+# ╔═╡ 0e81b72c-1f09-4145-bd54-058ae1b7ded9
+md"And our reflective surface is the spectrum of the blue patch of the calibration target on the Mars Exploration Rover:"
+
+# ╔═╡ 23f09380-255c-11eb-1d49-89943d828c8c
+blue = mer_caltarget(:blue)
+
+# ╔═╡ 3e1e3c80-255c-11eb-23dc-75a55d31786e
+begin
+	plot(blue.λ,blue.r,color=:blue,label="MER caltarget “blue”")
+	plot!(light.λ,light.l,color=:orange,label="Mars Sky Opportunity measurement")
+end
+
+# ╔═╡ a9cb5ab0-8b16-11eb-3d10-dfc3953fbe2b
+blue
+
+# ╔═╡ f77e81a0-8a72-11eb-1e00-f9266532685f
+light
+
+# ╔═╡ 4c3765d0-255c-11eb-3e16-c98892838d0e
+md"It’s obvious that both spectra have different ranges and also different and irregular sample points. The surface spectrum even reaches pretty far into the IR region. This can easily be mitigated by adapting both spectra to a set of rules defined by the *spectral environment*.
+For that, we need to define a **spectral environment**, which contains all information about the overall valid traits of the spectra we want to work with. This is important to ensure and enable compatibility between spectra etc. which might have different wavelength ranges, resolutions, etc. The function to set up a spectral environment is:
+
+`set_specenv(λmin,Δλ,λmax,extrapolation)`
+
+possible values for extrapolation:
+
+`:zero`, `:constant`, `:linear`, `:quadratic`"
+
+# ╔═╡ 15adccb0-255d-11eb-2b83-c9564c07b62b
+md"We want to work in a spectral range that satisfies the latest color matching functions defined by the CIE in 2012, which are defined in a range of 390 nm to 830 nm in steps of 1 nm. Furthermore, for the sake of simplicity, we define that all extrapolated values should be set to zero. Extrapolation is necessary if a spectrum is not defined up to the boundaries (390 / 830 nm)."
+
+# ╔═╡ 1a26c720-255c-11eb-09fe-cb4cd9cafd46
+senv=set_specenv();senv.ex=:boundary
+
+# ╔═╡ a2061550-8a70-11eb-1d1c-1b884f18ae48
+senv
+
+# ╔═╡ a386f890-255d-11eb-0fae-2326d5d88d34
+md"To adapt a spectrum to the environment, use the function
+
+`adapt_spec(spec::Spectrum,specenv::SpecEnvironment,interporder...)`
+
+Valid arguments for `interporder` (order of spline interpolation):
+
+`:linear` for linear splines
+
+`:quadratic` for quadratic splines
+
+`:cubic, :natural` for natural cubic splines (zero curvature at boundaries)
+
+`:cubic, :periodic` for periodic cubic splines (both endpoints must have same value)
+
+`:cubic, :clamped, slope_start, slope_end` for clamped cubic splines with defined slopes at boundaries
+
+`:cubic, :constrained` for cubic constrained splines"
+
+# ╔═╡ 0c5a9a70-255e-11eb-26e0-8f1b434ed385
+l=adapt_spec(light,senv,:cubic,:natural)
+
+# ╔═╡ 42a8468e-255e-11eb-0495-5b80974193c4
+b=adapt_spec(blue,senv,:cubic,:natural)
+
+# ╔═╡ 59847aa0-255e-11eb-36a6-8f10abd28695
+md"Now we can check and compare the original and the adapted versions of the splines. The boxes mark the original irregular spectral samples, the smaller circles mark the resampled spectra as defined in the environment. You can see that for the **blue** spectrum the lower range was extrapolated according to the cubic spline defined by the original knots. Here is a zoomed in version of the two spectra:"
+
+# ╔═╡ cf17c5be-255d-11eb-0cb9-3703acb4ae96
+begin
+	scatter(blue.λ,blue.r,color=:blue,marker=:square,markersize=5,label="MER caltarget “blue”",legend=:topleft,xlim=(385,415),ylim=(0.1,0.55))
+	scatter!(light.λ,light.l,color=:orange,marker=:square,markersize=5,label="Mars Sky Opportunity measurement")
+	scatter!(b.λ,b.r,color=:lightblue,linestyle=:dash,label="MER caltarget resampled")
+	scatter!(l.λ,l.l,color=:gold,linestyle=:dash,label="Mars Sky Opportunity resampled")
+end
+
+# ╔═╡ d5d44030-255f-11eb-1bf2-fbc628979e90
+md"Let’s have a look at the opposite end:"
+
+# ╔═╡ c8bd44a0-255f-11eb-06d0-c911969126bf
+begin
+	scatter(blue.λ,blue.r,color=:blue,marker=:square,markersize=5,label="MER caltarget “blue”",legend=:bottomleft,xlim=(820,835),ylim=(-0.1,1.0))
+	scatter!(light.λ,light.l,color=:orange,marker=:square,markersize=5,label="Mars Sky Opportunity measurement")
+	scatter!(b.λ,b.r,color=:lightblue,linestyle=:dash,label="MER caltarget spec_env")
+	scatter!(l.λ,l.l,color=:gold,linestyle=:dash,label="Mars Sky Opportunity spec_env")
+end
+
+# ╔═╡ e74f5600-255b-11eb-3a98-718912d58c6c
+md"# Spectral operators"
+
+# ╔═╡ d3d88a20-2505-11eb-3fe8-a7183ff72a46
+md"We’re actually interested the resulting color and spectrum with a given light source and reflectance. `SpectralVis` contains a few overloaded operators that make this kind of calculation easy. Let’s define a light source and a reflecting surface:"
+
+# ╔═╡ 3d0f5aa0-2506-11eb-3072-3d7840704c25
+lightsource = mars_sky_opportunity()
+
+
+# ╔═╡ c5ff81a0-2506-11eb-305c-8721c7eb5987
+surface = mer_caltarget(:green)
+
+# ╔═╡ 924c6ba0-2508-11eb-25d9-8fe5faf11bad
+begin
+	plot(surface.λ,surface.r,color=:green,label="MER caltarget “green”")
+	plot!(lightsource.λ,lightsource.l,color=:orange,label="Mars Sky Opportunity measurement")
+end
+
+# ╔═╡ 32c456b0-2ed2-11eb-2c69-f3989cde9b93
+surface.λ
+
+# ╔═╡ 3e9c69a0-2ed2-11eb-3dbf-e7a0ecb05d4c
+surface.r
+
+# ╔═╡ 67776940-8b22-11eb-0fa2-3de9f03d6679
+lightsource.λ[end]
+
+# ╔═╡ af8d15e0-8b22-11eb-31c9-2be22127eb1d
+adapt_spec(lightsource,senv,:cubic,:natural)
+
+# ╔═╡ 8a955ace-2e99-11eb-25dd-e9a7242b4f6c
+begin
+	lightspec=adapt_spec(lightsource,senv,:cubic,:natural)
+	greenspec=adapt_spec(surface,senv,:cubic,:natural)
+end
+
+# ╔═╡ 0f23dce0-89d5-11eb-0b0b-7193920bef8b
+begin
+	plot(lightspec.λ,lightspec.l,color=:red,style=:dashdot,thickness=3,label="Martian sky (light source)")
+	plot!(greenspec.λ,greenspec.r,color=:green,label="MER caltarget green (refl)")
+	#plot!(refl.λ,refl.r,color=:black,style=:dashdot,label="reflected light")
+	#plot!(greenfilt.λ,greenfilt.t)
+end
+
+# ╔═╡ afcd7890-89d5-11eb-30db-4f57ca767fef
+begin
+	refl=×(greenspec,greenspec)
+	#greenf=TSpec(greenspec.λ,greenspec.r,.05)
+	#greenfilt=greenf*greenf
+end
+
+# ╔═╡ 2c64c8da-779e-4a2d-b1fd-cb739b316a17
+begin
+	→(s::SpectralVis.Spectrum,Δλ) = shift_spec(s,Δλ)
+	←(s::SpectralVis.Spectrum,Δλ) = shift_spec(s,-Δλ)
+end
+
+# ╔═╡ 66307660-89da-11eb-0576-8d571268e6dd
+plot(led.λ,led.l)
+
+# ╔═╡ c5e0d2c5-1f93-4475-b8ae-8a40d35f3db5
+begin
+	d65s=←(d65,23.3)
+	plot(d65s.λ,d65s.l)
+	plot!(d65.λ,d65.l)
+end
+
+# ╔═╡ 983b7c23-29fb-452d-beba-2aec2b8abe22
+cm=cmf(LMS2006_10)
+
+# ╔═╡ 0213f1eb-4cbe-4aa1-b8c1-4a469836723a
+begin
+	long=cm.l
+	mid=cm.m
+	short=cm.s
+end
+
+# ╔═╡ 70626740-a681-4da3-956c-1ee4c4badcdb
+begin
+	plot(cm.λ,cm.l,yrange=(0.000001,1.1),yaxis=:log10,color=:red)
+	plot!(cm.λ,cm.m,color=:green)
+	plot!(cm.λ,cm.s,color=:blue)
+end
+
 # ╔═╡ Cell order:
 # ╟─78adafde-247e-11eb-12e1-ddea99d50711
 # ╟─dbfc1410-2456-11eb-1274-7d1786793c6e
@@ -224,16 +413,18 @@ plot!(bspec0.λ,bspec0.r,color=:black,linestyle=:dot, labels=false)
 # ╟─0881c790-2462-11eb-05e1-9113e664ec28
 # ╟─2f7258b0-2462-11eb-31a2-8da7d9fb1dca
 # ╠═5216c132-2462-11eb-11ef-259ba512e80a
+# ╟─60284748-a78f-4dfa-9927-18ad85bdf5d0
 # ╠═ad2414b2-2462-11eb-3ea5-955a5a918a30
+# ╟─27bae2a1-2dc1-4a75-84ed-d329ce62abea
+# ╟─437e5e6d-1469-4767-a0a9-8fed5ecf6250
 # ╠═d99b2330-2462-11eb-2bee-6b79c56cf0cf
+# ╟─7db83947-d5dd-4a3a-9f63-efe1da7eb26c
 # ╠═e34ef68e-2462-11eb-394c-5712ac9de6da
 # ╟─e8969630-2462-11eb-3c02-996a99d88691
 # ╟─f24e2d8e-2477-11eb-3a27-dfebdfc43440
 # ╠═0c6bf812-2478-11eb-14ea-57c6522324f3
 # ╟─2c7f7c80-2478-11eb-1728-a1ab0b5ef106
 # ╠═00a64130-2463-11eb-1ed2-29a671508315
-# ╟─0edd04a0-2463-11eb-0a29-c50a447572d8
-# ╠═18b5ec30-2463-11eb-1f50-9b9fc218273e
 # ╟─1e781300-2463-11eb-2b3e-ff33d0043b07
 # ╠═369a82b0-2463-11eb-06c0-a79be68e16a6
 # ╟─47f2352e-2463-11eb-3976-d77c1624e204
@@ -245,11 +436,11 @@ plot!(bspec0.λ,bspec0.r,color=:black,linestyle=:dot, labels=false)
 # ╠═d811596e-2463-11eb-0de0-792feca7ffa0
 # ╟─e8a8a220-2463-11eb-2a70-cd5fbe573691
 # ╟─fe2f5850-2463-11eb-29a7-93f2db686897
-# ╟─4232ff20-2464-11eb-14d4-c79999ab77bf
 # ╟─69e30fb0-2464-11eb-0066-d15aa8c969e3
 # ╟─9b44a9b0-2464-11eb-138b-0d9775344d9f
 # ╠═c1a3a930-2464-11eb-1bef-996a6b7468f5
 # ╟─c77141b0-2464-11eb-1efa-a73f2a72b3b0
+# ╠═c5490aa0-254d-11eb-383c-adb08ba2eedf
 # ╟─07995c00-2465-11eb-125c-b5a167e0fc90
 # ╠═385b81b0-2465-11eb-151f-878bb717e157
 # ╟─a57b2320-247b-11eb-17d1-9fd1ecce6ed5
@@ -271,3 +462,40 @@ plot!(bspec0.λ,bspec0.r,color=:black,linestyle=:dot, labels=false)
 # ╟─b3ee6870-247d-11eb-0587-ef4e7989be87
 # ╠═bbd38ff0-2475-11eb-30e6-939c1fae753f
 # ╠═0c572270-2476-11eb-0972-89e9f7f99f3d
+# ╟─b2a5b300-2505-11eb-1ecc-098dda235b36
+# ╠═e880d120-255b-11eb-12d4-d945762279a1
+# ╠═10fbabc0-255c-11eb-0225-fb05d87dd7f2
+# ╟─0e81b72c-1f09-4145-bd54-058ae1b7ded9
+# ╠═23f09380-255c-11eb-1d49-89943d828c8c
+# ╠═3e1e3c80-255c-11eb-23dc-75a55d31786e
+# ╠═a9cb5ab0-8b16-11eb-3d10-dfc3953fbe2b
+# ╠═f77e81a0-8a72-11eb-1e00-f9266532685f
+# ╟─4c3765d0-255c-11eb-3e16-c98892838d0e
+# ╟─15adccb0-255d-11eb-2b83-c9564c07b62b
+# ╠═1a26c720-255c-11eb-09fe-cb4cd9cafd46
+# ╠═a2061550-8a70-11eb-1d1c-1b884f18ae48
+# ╟─a386f890-255d-11eb-0fae-2326d5d88d34
+# ╠═0c5a9a70-255e-11eb-26e0-8f1b434ed385
+# ╠═42a8468e-255e-11eb-0495-5b80974193c4
+# ╟─59847aa0-255e-11eb-36a6-8f10abd28695
+# ╠═cf17c5be-255d-11eb-0cb9-3703acb4ae96
+# ╟─d5d44030-255f-11eb-1bf2-fbc628979e90
+# ╠═c8bd44a0-255f-11eb-06d0-c911969126bf
+# ╟─e74f5600-255b-11eb-3a98-718912d58c6c
+# ╟─d3d88a20-2505-11eb-3fe8-a7183ff72a46
+# ╠═3d0f5aa0-2506-11eb-3072-3d7840704c25
+# ╠═c5ff81a0-2506-11eb-305c-8721c7eb5987
+# ╠═924c6ba0-2508-11eb-25d9-8fe5faf11bad
+# ╠═32c456b0-2ed2-11eb-2c69-f3989cde9b93
+# ╠═3e9c69a0-2ed2-11eb-3dbf-e7a0ecb05d4c
+# ╠═67776940-8b22-11eb-0fa2-3de9f03d6679
+# ╠═af8d15e0-8b22-11eb-31c9-2be22127eb1d
+# ╠═8a955ace-2e99-11eb-25dd-e9a7242b4f6c
+# ╠═0f23dce0-89d5-11eb-0b0b-7193920bef8b
+# ╠═afcd7890-89d5-11eb-30db-4f57ca767fef
+# ╠═2c64c8da-779e-4a2d-b1fd-cb739b316a17
+# ╠═66307660-89da-11eb-0576-8d571268e6dd
+# ╠═c5e0d2c5-1f93-4475-b8ae-8a40d35f3db5
+# ╠═983b7c23-29fb-452d-beba-2aec2b8abe22
+# ╠═0213f1eb-4cbe-4aa1-b8c1-4a469836723a
+# ╠═70626740-a681-4da3-956c-1ee4c4badcdb

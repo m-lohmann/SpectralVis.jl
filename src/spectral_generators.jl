@@ -1,8 +1,8 @@
 """
-`blockspec(λmin,λmax,Δλ,λs,λe,mode=1)`
+`blockspec(λmin,λmax,Δλ,λs,λe,str=1.0,mode=0)`
 regular `block spectrum` initialized to 0.0, with blocks λs..λe = 1.0
 
-`blockspec(λmin,λmax,Δλ,λs,λe,mode=0)`
+`blockspec(λmin,λmax,Δλ,λs,λe,str=1.0,1)`
 inversed `block spectrum` initialized to 1.0, with blocks λs..λe = 0.0
 
 """
@@ -12,7 +12,7 @@ function block_spec(λmin,λmax,Δλ,λs,λe,str=1.0,mode=0)
         r[Int((n-λmin)/Δλ)+1] = mode==0 ? str : 0.0
     end
     λ = collect(λmin:Δλ:λmax)
-    i_reflectance_spec(λ,r)
+    reflectance_spec(λ,r)
 end
 
 """
@@ -29,7 +29,7 @@ function led_spec(λmin,λmax,Δλ,λ0,Δλ1_2)
     for i in 1:n
         l[i] = led(λ[i],λ0,Δλ1_2)
     end
-    ILSpec(λ,l)
+    LSpec(λ,l)
 end
 
 """
@@ -49,11 +49,13 @@ end
 """
 `D_series_illuminant(T::Real)`
 
-The relative spectral power distribution (SPD) SD(λ) of a D series illuminant from 300 to 830 nm in 5 nm steps
+The relative spectral power distribution (SPD) SD(λ) of a D series illuminant at CCT `T`, from 300 to 830 nm in 5 nm steps. By definition the output spectra are normalized in a way that their luminance is always 100.0 at a wavelength of 560 nm.
+
+`Allowed CCT range: 4000 K ≤ CCT ≤ 25000 K`
 """
 function D_series_illuminant(T::Real)
     #xD,yD = CIE Daylight Locus
-    if T < 4000
+    if T < 4000 || T > 25000
         error("CCT must be between 4000 and 25000 K!")
     elseif 4000 ≤ T ≤ 7000
         xD = 0.244063 + 0.09911 * 1000.0 / T + 2.9678 * 1_000_000.0/T^2 - 4.6070 * 1_000_000_000.0/T^3
@@ -69,9 +71,11 @@ function D_series_illuminant(T::Real)
     S1 = daylight_generator_table[:,3]
     S2 = daylight_generator_table[:,4]
     SD = S0 .+ M1*S1 .+ M2*S2
-    i_luminance_spec(daylight_generator_table[:,1],SD)
+    luminance_spec(daylight_generator_table[:,1],SD)
 end
 
+"""
+"""
 function D_series_whitepoint(T::Real,colmatch)
     # color matching function 
     cm = cmf(colmatch)
@@ -81,7 +85,7 @@ function D_series_whitepoint(T::Real,colmatch)
     sT = SSpline.linearspline(nT.λ,nT.l)
     iT = SSpline.interp(sT, collect(390.0:1.0:830.0))
     # convert back to luminance spectrum
-    dT = ILSpec(iT[1],iT[2])
+    dT = LSpec(iT[1],iT[2])
     # calculate whitepoint
     wp = dT*cm
     # normalize whitepoint to Y=1.0
@@ -92,20 +96,20 @@ function D_series_luminance(T::Real)
     nT = normalize_spec(D_series_illuminant(T))
     sT = SSpline.linearspline(nT.λ,nT.l)
     iT = SSpline.interp(sT, collect(390.0:1.0:830.0))
-    ILSpec(iT[1],iT[2])
+    LSpec(iT[1],iT[2])
 end
 
 function blackbody_illuminant(T::Real,λs,Δλ,λe)
-    h=6.62607015e-34
-    k=1.380649e-23
-    c=299792458
+    h=6.62607015e-34 # [J*s] Planck’s constant
+    k=1.380649e-23   # [J/K] Boltzmann constant
+    c=299792458      # [m/s] Light speed
     wl=collect(λs:Δλ:λe)
     il=zeros(length(wl))
     @inbounds for n in 1:length(wl)
         λ=wl*1e-9
         il[n] = (2*π*h*c^2)/(λ[n]^5 * (exp(h*c/(λ[n]*k*T))-1))
     end
-    ILSpec(wl,il)
+    LSpec(wl,il)
 end
 
 function blackbody_whitepoint(T::Real,λs,Δλ,λe,colmatch)
@@ -133,7 +137,7 @@ end
 #i65=interp(s65,collect(390.0:1.0:830.0))
 #
 ## 3. create illuminant spectrum from i65
-#d65=ILSpec(i65[1],i65[2])
+#d65=LSpec(i65[1],i65[2])
 #
 ## 4. create whitepoint
 #

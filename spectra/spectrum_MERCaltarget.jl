@@ -1,11 +1,11 @@
-function mer_caltarget(color::AbstractString)
-   color == "white"  ? IRSpec(MER_caltarget_white[:,1],MER_caltarget_white[:,2]) :
-   color == "grey"   ? IRSpec(MER_caltarget_grey[:,1],MER_caltarget_grey[:,2]) :
-   color == "black"  ? IRSpec(MER_caltarget_black[:,1],MER_caltarget_black[:,2]) :
-   color == "yellow" ? IRSpec(MER_caltarget_yellow[:,1],MER_caltarget_yellow[:,2]) :
-   color == "red"    ? IRSpec(MER_caltarget_red[:,1],MER_caltarget_red[:,2]) :
-   color == "green"  ? IRSpec(MER_caltarget_green[:,1],MER_caltarget_green[:,2]) :
-   color == "blue"   ? IRSpec(MER_caltarget_blue[:,1],MER_caltarget_blue[:,2]) : error("Nonexistent MER calibration target color.")
+function mer_caltarget(color::Symbol)
+   color == :white  ? RSpec(MER_caltarget_white[:,1],MER_caltarget_white[:,2]) :
+   color == :grey   ? RSpec(MER_caltarget_grey[:,1],MER_caltarget_grey[:,2]) :
+   color == :black  ? RSpec(MER_caltarget_black[:,1],MER_caltarget_black[:,2]) :
+   color == :yellow ? RSpec(MER_caltarget_yellow[:,1],MER_caltarget_yellow[:,2]) :
+   color == :red    ? RSpec(MER_caltarget_red[:,1],MER_caltarget_red[:,2]) :
+   color == :green  ? RSpec(MER_caltarget_green[:,1],MER_caltarget_green[:,2]) :
+   color == :blue   ? RSpec(MER_caltarget_blue[:,1],MER_caltarget_blue[:,2]) : error("Nonexistent MER calibration target color.")
 end
 
 const MER_caltarget_yellow=

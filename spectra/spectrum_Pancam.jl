@@ -1,9 +1,11 @@
-pancam_L2() = ILSpec(PancamL2[:,1],PancamL2[:,2])
-pancam_L3() = ILSpec(PancamL3[:,1],PancamL3[:,2])
-pancam_L4() = ILSpec(PancamL4[:,1],PancamL4[:,2])
-pancam_L5() = ILSpec(PancamL5[:,1],PancamL5[:,2])
-pancam_L6() = ILSpec(PancamL6[:,1],PancamL6[:,2])
-pancam_L7() = ILSpec(PancamL7[:,1],PancamL7[:,2])
+function pancam(filter::Symbol)
+   filter == :L2 ? LSpec(PancamL2[:,1],PancamL2[:,2]) :
+   filter == :L3 ? LSpec(PancamL3[:,1],PancamL3[:,2]) :
+   filter == :L4 ? LSpec(PancamL4[:,1],PancamL4[:,2]) :
+   filter == :L5 ? LSpec(PancamL5[:,1],PancamL5[:,2]) :
+   filter == :L6 ? LSpec(PancamL6[:,1],PancamL6[:,2]) :
+   filter == :L7 ? LSpec(PancamL7[:,1],PancamL7[:,2]) : nothing
+end
 
 const PancamL2 =
    [729.893842887474	   0.0;

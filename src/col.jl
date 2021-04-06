@@ -5,7 +5,7 @@
 #end
 
 """
-`col(type,lum::ILSpec,whitepoint::Color3,colmatch,dl)`
+`col(type,lum::LSpec,whitepoint::Color3,colmatch,dl)`
 
 This function creates the color loci of the theoretically maximum color gamut under a given illuminant.
 
@@ -29,7 +29,7 @@ output: a,b,c (locus vectors in given color space)
 
         u,v,L for Luv
 """
-function col(type,lum::ILSpec,whitepoint::Color3,colmatch,dl)
+function col(type,lum::LSpec,whitepoint::Color3,colmatch,dl)
     u=Vector{Float64}()
     v=Vector{Float64}()
     w=Vector{Float64}()
@@ -115,7 +115,7 @@ output: a,b,c (locus vectors in given color space)
 
         a,b,L for Luv, Lab, DIN99, DIN99d, DIN99o
 """
-function colv(type,lum::ILSpec,whitepoint::Color3,colmatch,s) # s = start 
+function colv(type,lum::LSpec,whitepoint::Color3,colmatch,s) # s = start 
     u=Vector{Float64}()
     v=Vector{Float64}()
     w=Vector{Float64}()
@@ -201,9 +201,9 @@ function colv(type,lum::ILSpec,whitepoint::Color3,colmatch,s) # s = start
     locus1,locus2
 end
 """
-`sl(type,lum::ILSpec,whitepoint,colmatch,s,d,e)`
+`sl(type,lum::LSpec,whitepoint,colmatch,s,d,e)`
 """
-function sl(type,lum::ILSpec,whitepoint,colmatch,s,d,e)
+function sl(type,lum::LSpec,whitepoint,colmatch,s,d,e)
     locuscollect=Vector()
     @inbounds for dl in s:d:e
         l1,l2=colv(type,lum,whitepoint,colmatch,dl)
