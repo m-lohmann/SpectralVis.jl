@@ -1,10 +1,10 @@
 function pancam(filter::Symbol)
-   filter == :L2 ? LSpec(PancamL2[:,1],PancamL2[:,2]) :
-   filter == :L3 ? LSpec(PancamL3[:,1],PancamL3[:,2]) :
-   filter == :L4 ? LSpec(PancamL4[:,1],PancamL4[:,2]) :
-   filter == :L5 ? LSpec(PancamL5[:,1],PancamL5[:,2]) :
-   filter == :L6 ? LSpec(PancamL6[:,1],PancamL6[:,2]) :
-   filter == :L7 ? LSpec(PancamL7[:,1],PancamL7[:,2]) : nothing
+   filter == :L2 ? TSpec(PancamL2[:,1],PancamL2[:,2]) :
+   filter == :L3 ? TSpec(PancamL3[:,1],PancamL3[:,2]) :
+   filter == :L4 ? TSpec(PancamL4[:,1],PancamL4[:,2]) :
+   filter == :L5 ? TSpec(PancamL5[:,1],PancamL5[:,2]) :
+   filter == :L6 ? TSpec(PancamL6[:,1],PancamL6[:,2]) :
+   filter == :L7 ? TSpec(PancamL7[:,1],PancamL7[:,2]) : nothing
 end
 
 const PancamL2 =

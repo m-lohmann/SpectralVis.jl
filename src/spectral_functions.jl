@@ -12,21 +12,21 @@ end
 
 Reflectance spectrum of type `RSpec`
 """
-function reflectance_spec(λ,s)
-    return RSpec(λ,s)
+function reflectance_spec(λ,r)
+    return RSpec(λ,r)
 end
 
 """
 `transmittance_spec(λ,t)`
 
-Tansmittance spectrum at unit thickness.
+Tansmittance spectrum at unit thickness (x = 1.0).
 """
 function transmittance_spec(λ,t)
-    return TSpec(λ,t)
+    return TSpec(λ,t,1.0)
 end
 
 """
-`transmittance_spec(λ,t,x)`
+`transmittance_spec(λ, t, x)`
 
 Transmittance spectrum with thickness `x` given relative to unit thickness, according to Bougouer’s Law/Lambert’s Law.
 
@@ -48,16 +48,26 @@ function transmittance_spec(λ::Vector{Real},t::Vector{Real},d::Real,d0::Real)
 end
 
 """
-`reinterpolate(spectrum::Spectrum,λmin,Δλ,λmax,style="natural")`
+`reinterpolate(spectrum,λmin,Δλ,λmax,style=:natural)`
 """
-function reinterpolate(spectrum::Spectrum,λmin,Δλ,λmax,style=:natural)
+function reinterpolate(spectrum,λmin,Δλ,λmax,istyle=:natural,estyle=:linear)
     if typeof(spectrum) == RSpec
-        spl = cubicspline(spectrum.λ,spectrum.r,style)
-        l,s = interp(spl,(λmin:Δλ,λmax))
-        RSpec(l,s)
+        spl = cubicspline(spectrum.λ,spectrum.r,istyle)
+        epsl = extrap(spl,)
+        extrapolate(spl,xrange,extr::Symbol)
+        l,s = interp(spl,(λmin:Δλ:λmax))
+        return RSpec(l,s)
     elseif typeof(spectrum) == LSpec
-        spl = cubicspline(spectrum.λ,spectrum.l,style)
+        spl = cubicspline(spectrum.λ,spectrum.l,istyle)
         l,s = interp(spl,(λmin:Δλ,λmax))
-        LSpec(l,s)
+        return LSpec(l,s)
     end
+end
+
+"""
+`adaptated_color(spectrum)`
+"""
+function adapted_color(illuminant1,λrange)
+    lum=normalize_spec(blackbody_illuminant(T,390,1,830))
+    wp=blackbody_whitepoint(T,390,1,830,colmatch)
 end

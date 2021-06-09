@@ -1,5 +1,32 @@
+#=
+References:
 
-# CIE 1931 2° color matching function, 1nm increments starting at 360nm
+- CIE. (1926). Commission Internationale de l’Éclairage Proceedings, 1924. Cambridge: Cambridge University Press.
+- CIE. (1932). Commission Internationale de l’Éclairage Proceedings, 1931. Cambridge: Cambridge University Press.
+- CIE Proceedings (1964) Vienna Session, 1963, Vol. B, pp. 209-220 (Committee Report E-1.4.1), Bureau Central de la CIE, Paris
+- Guild, J. (1931). The colorimetric properties of the spectrum. Philosophical Transactions of the Royal Society of London, A230, 149-187.
+- Speranskaya, N. I. (1959). Determination of spectrum color co-ordinates for twenty-seven normal observers. Optics and Spectroscopy, 7, 424-428.
+- Stiles, W. S. & Burch, J. M. (1955). Interim report to the Commission Internationale de l’Éclairage Zurich, 1955, on the National Physical Laboratory's investigation of colour-matching. Optica Acta, 2, 168-181.
+- Stiles, W. S., & Burch, J. M. (1959). NPL colour-matching investigation: Final report. Optica Acta, 6, 1-26.
+- Stockman, A., Sharpe, L. T., & Fach, C. C. (1999). The spectral sensitivity of the human short-wavelength cones. Vision Research, 39, 2901-2927.
+- Stockman, A., & Sharpe, L. T. (2000). Spectral sensitivities of the middle- and long-wavelength sensitive cones derived from measurements in observers of known genotype. Vision Research, 40, 1711-1737.
+- Wright, W. D. (1928). A re-determination of the trichromatic coefficients of the spectral colours. Transactions of the Optical Society, 30, 141-164.
+- Wyszecki, G., & Stiles, W. S. (1982). Color Science: concepts and methods, quantitative data and formulae. (2nd ed.). New York: Wiley.
+
+=#
+
+
+
+#= CIE 1931 2° color matching functions in 1nm increments starting at 360nm
+
+Notes:
+
+The CIE 1931 2-deg CMFs (CIE, 1932), which form the basis for most practical colorimetry, are based on the chromaticity coordinates obtained by Guild (1931) and by Wright (1928). Chromaticity coordinates, however, provide only a relative measure of the ratios of the three primaries needed to match each spectrum color, whereas CMFs specify absolute energy values. In order to reconstruct the CMFs from the Wright and Guild data, it was assumed that the CIE1924 V(l) photopic luminosity function (CIE, 1926) is a linear combination of the three CMFs (see Wyszecki & Stiles, 1982), for a description of the reconstruction and for the tabulated values. It has long been clear that the CIE1924 V(λ) that was used to construct the CIE 1931 2-deg CMFs seriously underestimates sensitivity at wavelengths below 460 nm, so that these CMFs are seriously in error at short wavelengths.
+
+The Judd and Judd-Vos modifications are attempts to overcome this problem.
+
+See also Table I(3.3.1) of Wyszecki, G., & Stiles, W. S. (1982), “Color Science: concepts and methods, quantitative data and formulae.” (2nd ed.). New York: Wiley.
+=#
 const CMF1931 =
    [360.0   0.000129900000  0.000003917000  0.000606100000;
     361.0   0.000145847000  0.000004393581  0.000680879200;
@@ -473,7 +500,16 @@ const CMF1931 =
     829.0   0.000001341977  0.000000484612  0.000000000000;
     830.0   0.000001251141  0.000000451810  0.000000000000];
 
-# CIE 1964 10° color matching function, 1nm increments starting at 360nm
+#= CIE 1964 10° color matching functions in 1nm increments starting at 360nm
+
+Notes:
+
+The CIE 1931 2-deg CMFs (CIE, 1932), which form the basis for most practical colorimetry, are based on the chromaticity coordinates obtained by Guild (1931) and by Wright (1928). Chromaticity coordinates, however, provide only a relative measure of the ratios of the three primaries needed to match each spectrum color, whereas CMFs specify absolute energy values. In order to reconstruct the CMFs from the Wright and Guild data, it was assumed that the CIE1924 V(l) photopic luminosity function (CIE, 1926) is a linear combination of the three CMFs (see Wyszecki & Stiles, 1982), for a description of the reconstruction and for the tabulated values. It has long been clear that the CIE1924 V(λ) that was used to construct the CIE 1931 2-deg CMFs seriously underestimates sensitivity at wavelengths below 460 nm, so that these CMFs are seriously in error at short wavelengths.
+
+The Judd and Judd-Vos modifications are attempts to overcome this problem.
+
+See also Table I(3.3.1) of Wyszecki, G., & Stiles, W. S. (1982), “Color Science: concepts and methods, quantitative data and formulae.” (2nd ed.). New York: Wiley.
+=#
 const CMF1964 =
    [360.0   0.000000122200  0.000000013398  0.000000535027;
     361.0   0.000000185138  0.000000020294  0.000000810720;
@@ -948,7 +984,16 @@ const CMF1964 =
     830.0   0.000001553140  0.000000629700  0.000000000000]
 
 
-# Judd adjustment to the CIE 1931 2° CMF, 10nm increments starting at 370nm
+#= CIE 1931 2° XYZ CMFs modified by Judd (1951), in 10nm increments starting at 370nm
+
+Notes:
+
+It has long been clear that the CIE 1924 V(λ) function (CIE, 1926) that was used to construct the CIE 1931 2-deg CMFs (CIE, 1931) seriously underestimates sensitivity at wavelengths below 460 nm. Judd (1951) proposed a revised version of V(λ) to overcome this problem, and derived a new set of CMFs. Yet, like the CIE 1931 CMFs, the Judd-modified functions are reconstructed using the V(λ) function.
+
+From Table 1(5.5.2) of Wyszecki and Stiles (1982), “Color Science: concepts and methods, quantitative data and formulae.” (2nd ed.). New York: Wiley.
+
+Source of data: http://cvrl.ioo.ucl.ac.uk/cmfs.htm (retrieved 2021-06-02)
+=#
 const CMF1931_J =
    [370.0   0.0008  0.0001  0.0046;
     380.0   0.0045  0.0004  0.0224;
@@ -992,7 +1037,16 @@ const CMF1931_J =
     760.0   0.0002  0.0001  0.0000;
     770.0   0.0001  0.0000  0.0000]
 
-# Judd-Vos adjustment to the CIE 1931 2° CMF, 5nm increments starting at 380nm
+#= CIE 1931 2-deg, XYZ CMFs modified by Judd (1951) and Vos (1978) in 5nm increments starting at 380nm
+
+Notes:
+
+In 1978, Vos made additional corrections to Judd's (1951) revision of the CIE 1931 2 deg color matching functions (CIE, 1932) and incorporated the infra-red color reversal described by Brindley (1955). The Judd-Vos V(λ) is the modified luminosity function VM(λ) recently adopted by the CIE.
+
+From Table 1 of Vos(1978). See also Table I(5.5.2) of Wyszecki, G., & Stiles, W. S. (1982). “Color Science: concepts and methods, quantitative data and formulae.” (2nd ed.). New York: Wiley.
+
+Source of data: http://cvrl.ioo.ucl.ac.uk/cmfs.htm
+=#
 const CMF1931_JV =
    [380.0  2.689900e-003  2.000000e-004  1.226000e-002;
     385.0  5.310500e-003  3.955600e-004  2.422200e-002;

@@ -200,6 +200,7 @@ function colv(type,lum::LSpec,whitepoint::Color3,colmatch,s) # s = start
     #scatter!(v,w,u,markersize=0.2,labels=false)
     locus1,locus2
 end
+
 """
 `sl(type,lum::LSpec,whitepoint,colmatch,s,d,e)`
 """

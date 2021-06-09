@@ -1,12 +1,44 @@
+"""
+`mer_caltarget(color::Symbol)`
+
+Returns the spectrum of a given MER Caltarget color patch.
+
+Allowed color patch names:
+
+`:white, :grey, :black, :yellow, :red, :green, :blue`
+
+Result: `RSpec`
+"""
 function mer_caltarget(color::Symbol)
-   color == :white  ? RSpec(MER_caltarget_white[:,1],MER_caltarget_white[:,2]) :
-   color == :grey   ? RSpec(MER_caltarget_grey[:,1],MER_caltarget_grey[:,2]) :
-   color == :black  ? RSpec(MER_caltarget_black[:,1],MER_caltarget_black[:,2]) :
-   color == :yellow ? RSpec(MER_caltarget_yellow[:,1],MER_caltarget_yellow[:,2]) :
-   color == :red    ? RSpec(MER_caltarget_red[:,1],MER_caltarget_red[:,2]) :
-   color == :green  ? RSpec(MER_caltarget_green[:,1],MER_caltarget_green[:,2]) :
-   color == :blue   ? RSpec(MER_caltarget_blue[:,1],MER_caltarget_blue[:,2]) : error("Nonexistent MER calibration target color.")
+   color == :white  ? reflectance_spec(MER_caltarget_white[:, 1], MER_caltarget_white[:, 2]) :
+   color == :grey   ? reflectance_spec(MER_caltarget_grey[:, 1], MER_caltarget_grey[:, 2]) :
+   color == :black  ? reflectance_spec(MER_caltarget_black[:, 1], MER_caltarget_black[:, 2]) :
+   color == :yellow ? reflectance_spec(MER_caltarget_yellow[:, 1], MER_caltarget_yellow[:, 2]) :
+   color == :red    ? reflectance_spec(MER_caltarget_red[:, 1], MER_caltarget_red[:, 2]) :
+   color == :green  ? reflectance_spec(MER_caltarget_green[:, 1], MER_caltarget_green[:, 2]) :
+   color == :blue   ? reflectance_spec(MER_caltarget_blue[:, 1], MER_caltarget_blue[:, 2]) :
+   throw(DomainError(color, "Nonexistent MER calibration target color."))
 end
+
+
+"""
+`mer_caltarget(color::Int)`
+
+Returns the spectrum of a given MER Caltarget color patch.
+
+Allowed color patch indices: `1 ≤ color ≤ 7`.
+
+Result: `RSpec`
+"""
+function mer_caltarget(num::Int)
+   if num < 1 || num > 7
+      error("Color does not exist.")
+   else
+      i=[:white, :grey, :black, :yellow, :red, :green, :blue]
+      mer_caltarget(i[num])
+   end
+end
+
 
 const MER_caltarget_yellow=
    [400.0	      0.052336;

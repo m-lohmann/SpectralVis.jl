@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.14.0
+# v0.14.7
 
 using Markdown
 using InteractiveUtils
@@ -11,16 +11,25 @@ using SpectralVis
 using Colors
 
 # ╔═╡ 9ff8ea50-2461-11eb-3143-d1b38243f297
-using Plots; pyplot()
+using Plots; plotly()
 
 # ╔═╡ 14f2d870-245d-11eb-1fe3-779aa49070f1
 using SSpline
 
+# ╔═╡ f07cef7e-014a-4d59-8e31-4d394391adda
+begin
+	#import DarkMode
+    #DarkMode.enable(theme="material-palenight", cm_config=Dict("tabSize" => 4))
+	#DarkMode.enable()
+    #DarkMode.Toolbox(theme="default")
+	html"""<style> main {max-width: 900px;}"""
+end
+
 # ╔═╡ 78adafde-247e-11eb-12e1-ddea99d50711
 md"# A quick tour of the `SpectralVis` and `SSpline` packages"
 
-# ╔═╡ dbfc1410-2456-11eb-1274-7d1786793c6e
-md"## First, let’s get the basic stuff out of way:"
+# ╔═╡ a8bb86de-29be-474d-94e6-1a03f9afe70f
+md"## First, let’s get the basic stuff out of the way:"
 
 # ╔═╡ f444ebf0-2460-11eb-2ed3-c5db8e304e95
 md"We need to get a few packages to deal with spectra"
@@ -40,6 +49,31 @@ md"Then we need the spectral spline package **SSpline**, which is a specialized 
 # ╔═╡ 1afb7e20-245d-11eb-1ca8-9da92491cd50
 md"Now we’re ready to have some fun!"
 
+# ╔═╡ d04f4ee1-2609-4355-9846-5e155557d709
+md"## Spectral environments"
+
+# ╔═╡ 7d8d8c1e-ed75-472f-b08b-a93c29ab588c
+md"""
+The package `SpectralVis` automatically creates a *spectral environment* which defines the necessary parameters to work with spectra. These parameters are stored in the mutable struct `SPECENV` and can be requested and changed to suit the necessary requirements.
+
+The fields contained in `SPECENV` are:
+
+`λmin`: minimum wavelength, ideally identical with λmin of `cmf`, default: 390.0 nm
+
+`Δλ`: wavelength stepwidth, default: 1.0 nm
+
+`λmax`: maximum wavelength, ideally identical with λmax of `cmf`, default: 830.0 nm
+
+`cmf`: Color matching function (CMF) of type `CMatch`, default: `CIE12_10` (CIE 2012 10° observer)
+	
+options: `CIE31` (CIE1931 2° observer), `CIE31_J` (CIE1931 2° observer with Judd-correction), `CIE31_JV` (Judd-Vos-correction, `CIE64` (CIE1964 10° observer), `CIE12_2` (CIE2012 2° observer), `CIE12_10` (CIE2012 10° observer)
+
+`ex`: extrapolation type, with the options `:zero`, `:none`, `:boundary`, `:linear`, `:quadratic` (not yet implemented). Default: `:linear`
+"""
+
+# ╔═╡ f5760d98-77e3-4847-bb79-97f45b50b7da
+env = SPECENV
+
 # ╔═╡ 0881c790-2462-11eb-05e1-9113e664ec28
 md"First, let’s create a light source! We have several options for these."
 
@@ -47,7 +81,7 @@ md"First, let’s create a light source! We have several options for these."
 md"One option is to create a black body illuminant. Let’s say our light source is a black body radiator at a temperature of 6500K. We want to create an illuminant in the visual range of wavelength, say between 390 and 830 nm, with a resolution of 1 nm:"
 
 # ╔═╡ 5216c132-2462-11eb-11ef-259ba512e80a
-bb6500K = blackbody_illuminant(6500,390,1,830)
+bb6500K = blackbody_illuminant(env,6500)
 
 # ╔═╡ 60284748-a78f-4dfa-9927-18ad85bdf5d0
 md"What is the type of the spectrum?"
@@ -112,7 +146,10 @@ d65=normalize_spec(d6500)
 md"Now we can plot both spectra for comparison:"
 
 # ╔═╡ d811596e-2463-11eb-0de0-792feca7ffa0
-plot!(d65.λ,d65.l,labels=false)
+begin
+	plot(bb65.λ, bb65.l, linewidth=2, color= :blue, label="black body at 6500K")
+	plot!(d65.λ, d65.l, linewidth=2, color= :gold2, label="D65 daylight generator")
+end
 
 # ╔═╡ e8a8a220-2463-11eb-2a70-cd5fbe573691
 md"Voilá! Looking good!"
@@ -272,9 +309,15 @@ md"To adapt a spectrum to the environment, use the function
 
 Valid arguments for `interporder` (order of spline interpolation):
 
+1st order interpolation:
+
 `:linear` for linear splines
 
+2nd order interpolation, not yet implemented:
+
 `:quadratic` for quadratic splines
+
+3rd order interpolation:
 
 `:cubic, :natural` for natural cubic splines (zero curvature at boundaries)
 
@@ -295,10 +338,10 @@ md"Now we can check and compare the original and the adapted versions of the spl
 
 # ╔═╡ cf17c5be-255d-11eb-0cb9-3703acb4ae96
 begin
-	scatter(blue.λ,blue.r,color=:blue,marker=:square,markersize=5,label="MER caltarget “blue”",legend=:topleft,xlim=(385,415),ylim=(0.1,0.55))
-	scatter!(light.λ,light.l,color=:orange,marker=:square,markersize=5,label="Mars Sky Opportunity measurement")
-	scatter!(b.λ,b.r,color=:lightblue,linestyle=:dash,label="MER caltarget resampled")
-	scatter!(l.λ,l.l,color=:gold,linestyle=:dash,label="Mars Sky Opportunity resampled")
+	scatter(blue.λ,blue.r,color=:blue,marker=:square,markersize=6,label="MER caltarget “blue”",legend=:topleft,xlim=(385,430),ylim=(0.1,0.55))
+	scatter!(light.λ,light.l,color=:orange,marker=:square,markersize=6,label="Mars Sky Opportunity measurement")
+	scatter!(b.λ,b.r,color=:lightblue,linestyle=:dash,markersize=2,label="MER caltarget resampled")
+	scatter!(l.λ,l.l,color=:gold,linestyle=:dash,markersize=2,label="Mars Sky Opportunity resampled")
 end
 
 # ╔═╡ d5d44030-255f-11eb-1bf2-fbc628979e90
@@ -306,10 +349,18 @@ md"Let’s have a look at the opposite end:"
 
 # ╔═╡ c8bd44a0-255f-11eb-06d0-c911969126bf
 begin
-	scatter(blue.λ,blue.r,color=:blue,marker=:square,markersize=5,label="MER caltarget “blue”",legend=:bottomleft,xlim=(820,835),ylim=(-0.1,1.0))
-	scatter!(light.λ,light.l,color=:orange,marker=:square,markersize=5,label="Mars Sky Opportunity measurement")
-	scatter!(b.λ,b.r,color=:lightblue,linestyle=:dash,label="MER caltarget spec_env")
-	scatter!(l.λ,l.l,color=:gold,linestyle=:dash,label="Mars Sky Opportunity spec_env")
+	scatter(blue.λ,blue.r,color=:blue,marker=:cross,markersize=6,label="MER caltarget “blue”",legend=:bottomleft,xlim=(800,850),ylim=(-0.1,1.0))
+	scatter!(light.λ,light.l,color=:orange,marker=:cross,markersize=6,label="Mars Sky Opportunity measurement")
+	scatter!(b.λ,b.r,color=:lightblue,linestyle=:dash,markersize=2,label="MER caltarget spec_env")
+	scatter!(l.λ,l.l,color=:yellow,linestyle=:dash,markersize=2,label="Mars Sky Opportunity spec_env")
+end
+
+# ╔═╡ 9016a8f8-561f-4f0c-bd5e-8e3437a36801
+begin
+	scatter(blue.λ,blue.r,color=:blue,marker=:square,markersize=3,label="MER caltarget “blue”",legend=:topleft,xlim=(380,840))
+	scatter!(light.λ,light.l,color=:orange,marker=:square,markersize=3,label="Mars Sky Opportunity measurement")
+	scatter!(b.λ,b.r,color=:lightblue,linestyle=:dash,markersize=1,label="MER caltarget resampled")
+	scatter!(l.λ,l.l,color=:gold,linestyle=:dash,markersize=1,label="Mars Sky Opportunity resampled")
 end
 
 # ╔═╡ e74f5600-255b-11eb-3a98-718912d58c6c
@@ -322,13 +373,33 @@ md"We’re actually interested the resulting color and spectrum with a given lig
 lightsource = mars_sky_opportunity()
 
 
-# ╔═╡ c5ff81a0-2506-11eb-305c-8721c7eb5987
+# ╔═╡ 1f18b440-85f3-4e23-bb8d-1c7889c1c7c7
 surface = mer_caltarget(:green)
+
+# ╔═╡ c5ff81a0-2506-11eb-305c-8721c7eb5987
+green_spl = spline3(surface.λ,surface.r,:natural)
+
+# ╔═╡ 1497e433-4a73-4074-8b7e-228d3f029b50
+green_extrap = extrap(green_spl,390:830,:linear)
+
+# ╔═╡ 0b7b056d-0f00-4f82-873f-53825874e76f
+green_int = interp(green_extrap,390:1:830)
+
+# ╔═╡ cd636a24-b558-4c33-adca-ece8652b1640
+light_spl = spline3(lightsource.λ,lightsource.l,:natural)
+
+# ╔═╡ ad8c32f7-0a8f-4ab0-a088-c688945f96be
+light_extrap = extrap(light_spl,390:830,:linear)
+
+# ╔═╡ 9cc68e94-7008-4af2-bd56-fdaa922de29e
+light_int = interp(light_spl,390:830)
 
 # ╔═╡ 924c6ba0-2508-11eb-25d9-8fe5faf11bad
 begin
 	plot(surface.λ,surface.r,color=:green,label="MER caltarget “green”")
 	plot!(lightsource.λ,lightsource.l,color=:orange,label="Mars Sky Opportunity measurement")
+	scatter!(green_int[1],green_int[2],color=:cyan,markersize=1)
+	scatter!(light_int[1],light_int[2],color=:orange,markerkize=2)
 end
 
 # ╔═╡ 32c456b0-2ed2-11eb-2c69-f3989cde9b93
@@ -341,11 +412,21 @@ surface.r
 lightsource.λ[end]
 
 # ╔═╡ af8d15e0-8b22-11eb-31c9-2be22127eb1d
-adapt_spec(lightsource,senv,:cubic,:natural)
+begin
+	senv.λmax=840.0
+	senv.ex=:boundary
+	adapt_spec(lightsource,senv,:cubic,:natural)
+end
+
+# ╔═╡ 6126a56a-681f-4cce-b1f5-5cf6138d51bf
+senv
+
+# ╔═╡ 899288cb-714a-4399-a9ab-911b2e0c2c37
+extrap(linearspline(lightsource.λ,lightsource.l),390.0:890.0,senv.ex)
 
 # ╔═╡ 8a955ace-2e99-11eb-25dd-e9a7242b4f6c
 begin
-	lightspec=adapt_spec(lightsource,senv,:cubic,:natural)
+	lightspec=adapt_spec(lightsource,senv,:linear)
 	greenspec=adapt_spec(surface,senv,:cubic,:natural)
 end
 
@@ -359,7 +440,7 @@ end
 
 # ╔═╡ afcd7890-89d5-11eb-30db-4f57ca767fef
 begin
-	refl=×(greenspec,greenspec)
+	refl=*(greenspec,greenspec)
 	#greenf=TSpec(greenspec.λ,greenspec.r,.05)
 	#greenfilt=greenf*greenf
 end
@@ -375,7 +456,7 @@ plot(led.λ,led.l)
 
 # ╔═╡ c5e0d2c5-1f93-4475-b8ae-8a40d35f3db5
 begin
-	d65s=←(d65,23.3)
+	d65s=→(d65,23.3)
 	plot(d65s.λ,d65s.l)
 	plot!(d65.λ,d65.l)
 end
@@ -392,14 +473,30 @@ end
 
 # ╔═╡ 70626740-a681-4da3-956c-1ee4c4badcdb
 begin
-	plot(cm.λ,cm.l,yrange=(0.000001,1.1),yaxis=:log10,color=:red)
+	plot(cm.λ,cm.l,yrange=(0.000001,1.1),color=:red)
 	plot!(cm.λ,cm.m,color=:green)
 	plot!(cm.λ,cm.s,color=:blue)
 end
 
+# ╔═╡ 7fd0091a-640d-4df0-aabe-646c5f8742e0
+source=D_series_luminance(6500)
+
+# ╔═╡ 37dac578-8fc2-4c04-87d6-81b4822fc7ed
+Macbeth_color_chart
+
+# ╔═╡ 5e6acbc7-f548-4b5b-8774-443a92e06db8
+begin
+	cc = env.cmf
+	#dd = shift_colormatch(cc, :l, -20)
+	plot(cc.λ, cc.l, color = :red)
+	plot!(cc.λ, cc.m, color = :green)
+	plot!(cc.λ, cc.s, color = :blue)
+end
+
 # ╔═╡ Cell order:
+# ╠═f07cef7e-014a-4d59-8e31-4d394391adda
 # ╟─78adafde-247e-11eb-12e1-ddea99d50711
-# ╟─dbfc1410-2456-11eb-1274-7d1786793c6e
+# ╟─a8bb86de-29be-474d-94e6-1a03f9afe70f
 # ╟─f444ebf0-2460-11eb-2ed3-c5db8e304e95
 # ╟─1cb25910-2461-11eb-1f85-a9ed9362e326
 # ╠═08af84c0-2456-11eb-326c-2d675ca197af
@@ -410,6 +507,9 @@ end
 # ╟─0d1268b0-2461-11eb-15a9-87ca552b10c5
 # ╠═14f2d870-245d-11eb-1fe3-779aa49070f1
 # ╟─1afb7e20-245d-11eb-1ca8-9da92491cd50
+# ╟─d04f4ee1-2609-4355-9846-5e155557d709
+# ╟─7d8d8c1e-ed75-472f-b08b-a93c29ab588c
+# ╠═f5760d98-77e3-4847-bb79-97f45b50b7da
 # ╟─0881c790-2462-11eb-05e1-9113e664ec28
 # ╟─2f7258b0-2462-11eb-31a2-8da7d9fb1dca
 # ╠═5216c132-2462-11eb-11ef-259ba512e80a
@@ -481,15 +581,24 @@ end
 # ╠═cf17c5be-255d-11eb-0cb9-3703acb4ae96
 # ╟─d5d44030-255f-11eb-1bf2-fbc628979e90
 # ╠═c8bd44a0-255f-11eb-06d0-c911969126bf
+# ╠═9016a8f8-561f-4f0c-bd5e-8e3437a36801
 # ╟─e74f5600-255b-11eb-3a98-718912d58c6c
 # ╟─d3d88a20-2505-11eb-3fe8-a7183ff72a46
 # ╠═3d0f5aa0-2506-11eb-3072-3d7840704c25
+# ╠═1f18b440-85f3-4e23-bb8d-1c7889c1c7c7
 # ╠═c5ff81a0-2506-11eb-305c-8721c7eb5987
+# ╠═1497e433-4a73-4074-8b7e-228d3f029b50
+# ╠═0b7b056d-0f00-4f82-873f-53825874e76f
+# ╠═cd636a24-b558-4c33-adca-ece8652b1640
+# ╠═ad8c32f7-0a8f-4ab0-a088-c688945f96be
+# ╠═9cc68e94-7008-4af2-bd56-fdaa922de29e
 # ╠═924c6ba0-2508-11eb-25d9-8fe5faf11bad
 # ╠═32c456b0-2ed2-11eb-2c69-f3989cde9b93
 # ╠═3e9c69a0-2ed2-11eb-3dbf-e7a0ecb05d4c
 # ╠═67776940-8b22-11eb-0fa2-3de9f03d6679
 # ╠═af8d15e0-8b22-11eb-31c9-2be22127eb1d
+# ╠═6126a56a-681f-4cce-b1f5-5cf6138d51bf
+# ╠═899288cb-714a-4399-a9ab-911b2e0c2c37
 # ╠═8a955ace-2e99-11eb-25dd-e9a7242b4f6c
 # ╠═0f23dce0-89d5-11eb-0b0b-7193920bef8b
 # ╠═afcd7890-89d5-11eb-30db-4f57ca767fef
@@ -499,3 +608,6 @@ end
 # ╠═983b7c23-29fb-452d-beba-2aec2b8abe22
 # ╠═0213f1eb-4cbe-4aa1-b8c1-4a469836723a
 # ╠═70626740-a681-4da3-956c-1ee4c4badcdb
+# ╠═7fd0091a-640d-4df0-aabe-646c5f8742e0
+# ╠═37dac578-8fc2-4c04-87d6-81b4822fc7ed
+# ╠═5e6acbc7-f548-4b5b-8774-443a92e06db8
