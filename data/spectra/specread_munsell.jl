@@ -1,7 +1,7 @@
 """
 `munsell_specs()`
 
-returns an array containing all 1269 munsell spectra, measured from 380 to 800 nm in 1 nm steps.
+Returns an array containing all 1269 munsell spectra, measured from 380 to 800 nm in 1 nm steps.
 """
 function munsell_specs()
     filename = "munsell.dat"
@@ -13,33 +13,35 @@ function munsell_specs()
 end
 
 """
-`munsell_spec(idx::Int,speclist)`
+`munsell_spec(idx::Int, speclist)`
 
-returns `RSpec` of Munsell spectrum at index `idx`.
+Returns reflectance spectrum of the Munsell dataset at index `idx`.
 Possible indices go from 1 to 1269
 
-example:
+# Example
 
-julia> spec_idx(437,speclist)
+```jldoctest
+julia> munsell_spec(437, speclist)
 RSpec(Real[380, 381, 382, 383, 384, 385, 386, 387, 388, 389  …  791, 792, 793, 794, 795, 796, 797, 798, 799, 800], Real[0.1184, 0.1208, 0.124, 0.1301, 0.1349, 0.1431, 0.1498, 0.1579, 0.1631, 0.1731  …  0.3355, 0.3364, 0.3345, 0.3337, 0.3327, 0.3348, 0.3392, 0.3377, 0.335, 0.3351])
+```
 """
-function munsell_spec(idx::Int,speclist=munsell_specs())
+function munsell_spec(idx::Int, speclist = munsell_specs())
     n=421
-    0 < idx < 1270 ? (i=(idx-1)*n+1) : error("Index $idx is outside the range of 1 ≤ idx ≤ 1269.")
+    0 < idx < 1270 ? (i=(idx-1)*n+1) : throw(DomainError(idx, "Index is outside the range of 1 ≤ idx ≤ 1269."))
     y=speclist[i:i+n-1]
     RSpec(collect(380:800),y)
 end
 
 function munsell_spec(munsellcolor::AbstractString)
-    idx = get(munsell_dict(),munsellcolor,9999)
-    ifelse(idx==9999, error("Munsell Color does not exist"), munsell_spec(idx,munsell_specs()))
+    idx = get(munsell_dict(), munsellcolor, 9999)
+    ifelse(idx == 9999, throw(DomainError(idx, "Munsell Color does not exist")), munsell_spec(idx, munsell_specs()))
 end
 
 function spec_color(col::AbstractString,colordict::AbstractString)
-    ind=get(munsell_dict(),col,"Color key $(col) does not exist")
+    ind = get(munsell_dict(), col, "Color key $(col) does not exist")
     if haskey(td,col)
-        return spec_idx(ind,munsell_specs())
-    else error("Color key $(col) does not exist")
+        return spec_idx(ind, munsell_specs())
+    else throw(DomainError(ind, "Color key does not exist"))
     end
 end
 
@@ -55,8 +57,8 @@ end
 function plotmunsell(index)
     λ=collect(380:800)
     n=421
-    plot(λ,zeros(n))
-    plot!(λ,spec_idx(index,munsell_specs())[i:i+n-1])
+    plot(λ, zeros(n))
+    plot!(λ, spec_idx(index, munsell_specs())[i:i+n-1])
 end
 
 # The full set of 1269 munsell color names

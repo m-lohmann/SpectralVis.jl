@@ -175,9 +175,18 @@
 
 
 """
-`wratten(f::Int)`
+    wratten(f::Int)
 
-returns `TSpec` of one of the Wratten filters of a given name at unit thickness.
+    Returns `TSpec` of one of the Wratten filters of a given index `f` in the range `0 < f < 128`.
+
+# Examples
+```jldoctest
+julia> wratten(77)
+TSpec(Real[400.0, 410.0, 420.0, 430.0, 440.0, 450.0, 460.0, 470.0, 480.0, 490.0  …  610.0,
+ 620.0, 630.0, 640.0, 650.0, 660.0, 670.0, 680.0, 690.0, 700.0], Real[0.6409999999999999,
+  0.665, 0.684, 0.695, 0.7, 0.6940000000000001, 0.675, 0.654, 0.629, 0.598  …  0.4, 0.376,
+   0.355, 0.342, 0.336, 0.34, 0.341, 0.345, 0.348, 0.36], 1.0)
+```
 """
 function wratten(f::Int)
     if 0 < f < 128
@@ -191,9 +200,19 @@ end
 
 
 """
-`wratten(f::Symbol)`
+    wratten(f::Symbol)
 
-returns `TSpec` of one of the Wratten filters of a given name.
+Returns `TSpec` of one of the Wratten filters of a given name `f`.
+
+# Examples
+
+```jldoctest
+julia> wratten(:n44)
+TSpec(Real[400.0, 410.0, 420.0, 430.0, 440.0, 450.0, 460.0, 470.0, 480.0, 490.0  …  610.0, 
+620.0, 630.0, 640.0, 650.0, 660.0, 670.0, 680.0, 690.0, 700.0], Real[0.0044, 0.0036, 0.0063,
+ 0.0363, 0.131, 0.254, 0.365, 0.465, 0.536, 0.568…  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0018, 0.016], 1.0)
+```
 """
 function wratten(f::Symbol)
     @inbounds for i in 1:length(Wrattenfilters)
@@ -204,18 +223,22 @@ end
 
 
 """
-`wratten_filter(f::Int, x::Real)`
+    wratten_filter(f::Int, x::Real)
 
-returns `TSpec` of one of the Wratten filters of a given name adapted to `SPECENV` settings. `x` is relative to unit thickness.
+Returns `TSpec` of one of the Wratten filters of a given name adapted to `SPECENV` settings.
+`x` is relative to unit thickness.
+
+```jldoctest
+
+```
 """
-function wratten_filter(f::Int,x::Real)
-    env = SPECENV
+function wratten_filter(f::Int,x::Real, env = SPECENV)
     wr = wratten(f)
-    extr = extrap(cubicspline(wr.λ, wr.t.^x, :natural), collect(env.λmin:env.Δλ:env.λmax),:linear)
+    extr = extrap(hermitespline(wr.λ, wr.t.^x, :kruger), collect(env.λmin:env.Δλ:env.λmax),:smooth)
     intr = interp(extr, env.λmin:env.Δλ:env.λmax)
     intr[2][intr[2] .< 0.0] .= 0.0
 	intr[2][intr[2] .> 1.0] .= 1.0
-    transmittance_spec(intr[1], intr[2])
+    transmittance_spec(intr[1], intr[2], x)
 end
 
 

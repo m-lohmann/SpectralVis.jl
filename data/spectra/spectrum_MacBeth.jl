@@ -176,6 +176,33 @@ const Macbeth_chart1=
     730  0.214  0.728  0.144  0.135  0.394  0.229  0.659  0.296  0.618  0.445  0.380  0.689  0.055  0.110  0.748  0.805  0.821  0.079  0.932  0.565  0.330  0.172  0.080  0.032]
 
 # Macbeth color checker spectra from 380 to 780 nm in 4 nm steps.
+# Measurement info:
+# t=r n=101 o=380 s=4
+# Reflectance (IE, signal DIVIDED by reference)
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Dark Skin
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Light Skin
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Blue Sky
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Foilage
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Blue Flower
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Bluish Green
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Orange
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Purplish Blue
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Moderate Red
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Purple
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Yellow Green
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Orange Yellow
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Blue
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Green
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Red
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Yellow
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Magenta
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Cyan
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - White
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Neutral-8
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Neutral-6.5
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Neutral-5
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Neutral-3.5
+# Mon Oct 24 19:32:41 1994 |  Reflectance | Macbeth - Black
 const Macbeth_chart2=
  [380  6.4071e-02  1.2475e-01  1.1468e-01  5.0734e-02  1.2553e-01  1.2553e-01  8.9655e-02  9.6830e-02  1.2497e-01  9.4605e-02  8.1090e-02  9.1491e-02  6.2681e-02  6.6018e-02  7.6196e-02  9.1101e-02  1.2608e-01  1.0545e-01  2.0117e-01  1.7297e-01  1.5973e-01  1.2814e-01  8.4316e-02  2.9522e-02;
   384  6.4733e-02  1.3434e-01  1.2972e-01  5.0986e-02  1.4153e-01  1.3814e-01  8.5062e-02  1.0816e-01  1.2623e-01  1.0308e-01  7.8747e-02  8.6499e-02  6.7197e-02  6.8378e-02  7.6232e-02  7.6283e-02  1.3778e-01  1.1407e-01  2.0472e-01  1.8778e-01  1.7059e-01  1.3696e-01  8.6242e-02  2.9476e-02;

@@ -1,5 +1,5 @@
 """
-`luminance_spec(λ::Vector{Float64},r::Vector{Float64})`
+    luminance_spec(λ,r)`
 
 Luminance spectrum of type `RSpec`
 """
@@ -8,7 +8,7 @@ function luminance_spec(λ,l)
 end
 
 """
-`reflectance_spec(λ::Vector{Float64},r::Vector{Float64})`
+`reflectance_spec(λ,r)`
 
 Reflectance spectrum of type `RSpec`
 """
@@ -17,7 +17,7 @@ function reflectance_spec(λ,r)
 end
 
 """
-`transmittance_spec(λ,t)`
+    transmittance_spec(λ,t)
 
 Tansmittance spectrum at unit thickness (x = 1.0).
 """
@@ -26,7 +26,7 @@ function transmittance_spec(λ,t)
 end
 
 """
-`transmittance_spec(λ, t, x)`
+    transmittance_spec(λ, t, x)
 
 Transmittance spectrum with thickness `x` given relative to unit thickness, according to Bougouer’s Law/Lambert’s Law.
 
@@ -37,7 +37,7 @@ function transmittance_spec(λ::Vector{Real},t::Vector{Real},x::Real)
 end
 
 """
-`transmittance_spec(λ,t,d,d0)`
+    transmittance_spec(λ,t,d,d0)
 
 Transmittance spectrum with thickness term `d`. Unit thickness is `d0`, according to Bouguer’s Law/Lambert’s Law.
 
@@ -65,9 +65,9 @@ function reinterpolate(spectrum,λmin,Δλ,λmax,istyle=:natural,estyle=:linear)
 end
 
 """
-`adaptated_color(spectrum)`
+    adaptated_color(spectrum)
 """
 function adapted_color(illuminant1,λrange)
-    lum=normalize_spec(blackbody_illuminant(T,390,1,830))
-    wp=blackbody_whitepoint(T,390,1,830,colmatch)
+    lum=normalize_spec(blackbody_illuminant(T))
+    wp=blackbody_whitepoint(SPECENV, T)
 end

@@ -1,16 +1,19 @@
 """
-`mineral_specs(mineral::Symbol)`
+    mineral_specs(mineral::Symbol)
 
 Reads and returns the spectral data of a chosen mineral.
 
-Allowed names for `mineral`: `:augite`, `:goethite`, `:hematite`
-
-Result: `Array`
+Available `mineral` types:
+* `:augite`
+* `:goethite`
+* `:hematite`
+* `:pigeonite`
 """
 function mineral_specs(mineral::Symbol)
     mineral == :augite ? filename = "Augite.spec" :
     mineral == :goethite ? filename = "Goethite.spec" :
-    mineral == :hematite ? filename = "Hematite.spec" : nothing
+    mineral == :hematite ? filename = "Hematite.spec" :
+    mineral == :pigeonite ? filename = "Pigeonite.spec" : nothing
     fp=@__DIR__
     cd(fp)
     cd("..\\spectra")
@@ -20,13 +23,11 @@ end
 
 
 """
-`mineral(mineral::Symbol, spectable = mineral_specs(mineral))`
+    mineral(mineral::Symbol, spectable = mineral_specs(mineral))
 
 Returns reflectance spectrum of chosen mineral.
 
-Allowed names for `mineral`: `:augite`, `:goethite`, `:hematite`
-
-Result: `RSpec`
+Allowed names for `mineral`: `:augite`, `:goethite`, `:hematite`, `:pigeonite`
 """
 function mineral(mineral::Symbol, spectable = mineral_specs(mineral))
     len = div(length(spectable), 2)

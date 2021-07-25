@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.14.7
+# v0.14.8
 
 using Markdown
 using InteractiveUtils
@@ -48,7 +48,7 @@ md"Factor for metameric black: $FACT"
 
 # ╔═╡ a8b2389f-45f0-4080-a00a-5491f36d3c16
 begin
-	T = 6504
+	T = 6504 # D65 CCT
 	#illum = normalize_spec(D_series_illuminant(T),1.0)
 	illum = normalize_spec(blackbody_illuminant(SPECENV,T),1.0)
 	#illum = LSpec(collect(390:830),ones(830-389))
@@ -58,40 +58,34 @@ begin
 	wc = tristimulus(illum, wrat10)./100
 	wb = tristimulus(illum, wrat20)./100
 	
-	plot(ylimits=(-0.5,1.1), size = (900,500),legend=:outertopright)
+	plot(ylimits=(-0.1,1.21), size = (900,500),legend=:outertopright, title = "Filter and metameric filter", xaxis = "wavelength [nm]", yaxis = "transmittance")
 	
-	# fundamental metamer:
+	# fundamental metamer colorization:
 	funda = XYZ(wc[1],wc[2],wc[3])
-	# alternative fund. met.
+	# alternative fund. met. colorization:
 	altblack = XYZ(wb[1],wb[2],wb[3])	
 
-	plot!(wrat10.λ,wrat10.t, color = funda, linewidth = 3.0, label = "wratten filter")
-
+	plot!(wrat10.λ,wrat10.t, color = funda, linewidth = 4.0, label = "wratten filter")
+	
+	# fundamental metamer of filter 1
 	meta = fundamental_metamer(illum, wrat10)
 
-	# original metameric black
+	# original metameric black of filter 1
 	bla = metameric_black(illum, wrat10)
-	#alternative metameric black
+	#alternative metameric black of filter 2
 	mbla = metameric_black(illum,wrat20)
 	
-	plot!(meta.λ,meta.l, color = funda, linewidth = 2.0, style = :dash, label = "fund. met.")
-	plot!(bla.λ,bla.l, color = :black, label = "metameric black")
-	plot!(mbla.λ,mbla.l, color = altblack, linewidth = 2, label = "altern. metameric black")
-	plot!(meta.λ,meta.l.+mbla.l.*FACT, linewidth = 2.0, color = altblack./2 ,style = :dashdotdot, label = "fund. + black * $(round(FACT, digits=1))")
+	#plot!(meta.λ,meta.l, color = funda, linewidth = 2.0, style = :dash, label = "fund. met.")
+	#plot!(bla.λ,bla.l, color = :black, label = "metameric black")
+	#plot!(mbla.λ,mbla.l, color = altblack, linewidth = 2, label = "altern. metameric black")
+	plot!(meta.λ,wrat10.t.+mbla.l.*FACT, linewidth = 4.0, color = altblack ,style = :dash, label = "wratten filt. + black * $(round(FACT, digits=1))")
 end
 
 # ╔═╡ 465b2e9b-d551-4413-a803-7e5b8358b13d
 XYZ(wc[1],wc[2],wc[3])
 
-# ╔═╡ 4de5c7fe-3155-4bdb-b695-064b4f2ae55d
-begin
-	sp = spline1(collect(380:10:830),rand(length(illum.λ)))
-	rando = reflectance_spec(collect(380:830),interp(sp,(380:830)))
-	c = ×(illum, rando, env.cmf)
-end
-
-# ╔═╡ 95f95ec4-333e-4de8-926b-3871119591ed
-plot(rando.λ,rando.r)
+# ╔═╡ d3275197-f1bb-4427-98b1-c2fd9ccaa267
+illum * wrat20 * wrat20
 
 # ╔═╡ Cell order:
 # ╠═2f81fae3-ab8f-4be3-b023-1ed12e393592
@@ -107,5 +101,4 @@ plot(rando.λ,rando.r)
 # ╟─1f39485f-fc8e-4d8a-9178-0bca54f8bbf1
 # ╟─465b2e9b-d551-4413-a803-7e5b8358b13d
 # ╠═a8b2389f-45f0-4080-a00a-5491f36d3c16
-# ╠═4de5c7fe-3155-4bdb-b695-064b4f2ae55d
-# ╠═95f95ec4-333e-4de8-926b-3871119591ed
+# ╠═d3275197-f1bb-4427-98b1-c2fd9ccaa267

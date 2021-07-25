@@ -38,9 +38,9 @@ begin
 	mixi = interp(mixe,390:1:830)
 	dill=D_series_illuminant(6500)
 	dswp=D_series_whitepoint(6500)
-	redcol=convert(Lab,dill*RSpec(ri[1],ri[2])*SPECENV.cmf,dswp)
-	blucol=convert(Lab,dill*RSpec(bi[1],bi[2])*SPECENV.cmf,dswp)
-	mixcol=convert(Lab,dill*RSpec(mixi[1],mixi[2])*SPECENV.cmf,dswp)
+	redcol=Colors.convert(Lab,dill*RSpec(ri[1],ri[2])*SPECENV.cmf,dswp)
+	blucol=Colors.convert(Lab,dill*RSpec(bi[1],bi[2])*SPECENV.cmf,dswp)
+	mixcol=Colors.convert(Lab,dill*RSpec(mixi[1],mixi[2])*SPECENV.cmf,dswp)
 	
 	scatter([blucol.a mixcol.a redcol.a],[blucol.b mixcol.b redcol.b], color=[blucol mixcol redcol],markersize=10,legend=:outertopright,xlimits=(-55,55),ylimits=(-55,55),aspect_ratio=1)
 end

@@ -1,26 +1,28 @@
 """
-`blockspec(λmin,λmax,Δλ,λs,λe,str=1.0,mode=0)`
-regular `block spectrum` initialized to 0.0, with blocks λs..λe = 1.0
+    block_spec(λmin, λmax, Δλ, λs, λe, str = 1.0, mode = 0)
 
-`blockspec(λmin,λmax,Δλ,λs,λe,str=1.0,1)`
-inversed `block spectrum` initialized to 1.0, with blocks λs..λe = 0.0
+Regular `block spectrum` initialized to `0.0`, with blocks `λs..λe = 1.0`
 
+    block_spec(λmin, λmax, Δλ, λs, λe, str = `1.0`, 1)
+
+Inversed `block spectrum` initialized to `1.0`, with blocks `λs..λe = 0.0`
 """
-function block_spec(λmin,λmax,Δλ,λs,λe,str=1.0,mode=0)
-    r= mode == 0 ? (zeros(Float64, Int(1.0+(λmax-λmin)/Δλ))) : (ones(Float64,Int(1.0+(λmax-λmin)/Δλ)))
+function block_spec(λmin, λmax, Δλ, λs, λe, str = 1.0, mode = 0)
+    r = mode == 0 ? (zeros(Float64, Int(1.0 + (λmax - λmin) / Δλ))) : (ones(Float64, Int(1.0 + (λmax - λmin) / Δλ)))
     for n = λs:Δλ:λe
         r[Int((n-λmin)/Δλ)+1] = mode==0 ? str : 0.0
     end
     λ = collect(λmin:Δλ:λmax)
-    reflectance_spec(λ,r)
+    reflectance_spec(λ, r)
 end
 
 
 """
-`blockspec(env::SpecEnvironment, λ)`
+    block_spec(env::SpecEnvironment, λ)
 
-Zero block spectrum with only wavelength `λ` set to 1.0
-Fast version to create highest purity optimal colors. Linear interpolation for intermediate λ values.
+Zero block spectrum with only wavelength `λ` set to `1.0`.
+
+Fast version to create highest purity optimal colors. Linear interpolation for intermediate `λ` values.
 """
 function block_spec(env::SpecEnvironment,λ::Real)
     env.λmin ≤ λ ≤ env.λmax ? nothing : DomainError(λ, "Outside of boundaries defined by spectral environment.")
@@ -37,9 +39,9 @@ function block_spec(env::SpecEnvironment,λ::Real)
 end
 
 """
-`blockspec(λ)`
+    block_spec(λ)
 
-Zero block spectrum with only wavelength `λ` set to 1.0
+Zero block spectrum with only wavelength `λ` set to `1.0`
 Fast version to create highest purity optimal colors.
 
 Spectral limits are taken from the spectral environment.
@@ -48,78 +50,79 @@ block_spec(λ::Real) = block_spec(SPECENV, λ)
 
 
 """
-`led_spec(λmin,λmax,Δλ,λ0,Δλ1_2)`
+    led_spec(λmin, λmax, Δλ, λ0, Δλ1_2)
 
 LED spectrum simulation
-λ0 = peak wavelength
-Δλ1_2 = half spectral width, width at 50% peak intensity
+
+- `λ0`: peak wavelength
+- `Δλ1_2`: half spectral width, width at 50% peak intensity
 
 Result: `LSpec`
 
 Source: Yoshi Ohno (2004), Simulation Analysis of White LED Spectra and Color Rendering,
         Proceedings for CIE Expert Sumposium on LED Light Sources, Tokyo, JA (Accessed May 27, 2021) 
 """
-function led_spec(λmin,λmax,Δλ,λ0,Δλ1_2)
+function led_spec(λmin, λmax, Δλ, λ0, Δλ1_2)
     λ = collect(λmin:Δλ:λmax)
     n = length(λ)
     l = zeros(n)
     for i in 1:n
-        l[i] = led(λ[i],λ0,Δλ1_2)
+        l[i] = led(λ[i], λ0, Δλ1_2)
     end
     luminance_spec(λ,l)
 end
 
 """
-LED function
+LED helper function
 """
-function led(λ,λ0,Δλ1_2)
-    g = exp(-((λ-λ0)/Δλ1_2)^2)
-    (g + 2 * g^5)/3
+function led(λ,λ0, Δλ1_2)
+    g = exp(-((λ - λ0) / Δλ1_2)^2)
+    (g + 2 * g^5) / 3
 end
 
 """
-`D_series_illuminant(T::Real)`
+    D_series_generator(T::Real)
 
-The relative spectral power distribution (SPD) SD(λ) of a D series illuminant at CCT `T`, from 300 to 830 nm in 5 nm steps. By definition the output spectra are normalized in a way that their luminance is always 100.0 at a wavelength of 560 nm.
+The relative spectral power distribution SPD(λ) of a D series illuminant at CCT `T`, from `300` to `830 nm` in `5 nm` steps. By definition the output spectra are normalized in a way that their luminance is always `100.0` at a wavelength of `560 nm`.
 
-`Allowed CCT range: 4000 K ≤ CCT ≤ 25000 K`
+Allowed CCT range: `4000 K` ≤ `CCT` ≤ `25000 K`
 """
 function D_series_generator(T::Real)
     #xD,yD = CIE Daylight Locus
     if T < 4000 || T > 25000
-        error("CCT must be between 4000 and 25000 K!")
+        throw(DomainError(T, "CCT must be between 4000 and 25000 K."))
     elseif 4000 ≤ T ≤ 7000
-        xD = 0.244063 + 0.09911 * 1000.0 / T + 2.9678 * 1_000_000.0/T^2 - 4.6070 * 1_000_000_000.0/T^3
+        xD = 0.244063 + 0.09911 * 1000.0 / T + 2.9678 * 1_000_000.0 / T^2 - 4.6070 * 1_000_000_000.0 / T^3
     elseif 7000 < T ≤ 25000
-        xD = 0.237040 + 0.24748*1000.0/T + 1.9018*1_000_000.0/T^2 -2.0064*1000_000_000.0/T^3
+        xD = 0.237040 + 0.24748 * 1000.0 / T + 1.9018 * 1_000_000.0 / T^2 - 2.0064 * 1000_000_000.0 / T^3
     end
 
-    yD = -3.000 * xD^2 + 2.870*xD-0.275
-    M  = 0.0241 + 0.2562*xD - 0.7341*yD
-    M1 = (-1.3515-1.7703*xD + 5.9114*yD)/M
-    M2 = (0.03000 - 31.4424*xD + 30.0717*yD)/M
-    S0 = daylight_generator_table[:,2]
-    S1 = daylight_generator_table[:,3]
-    S2 = daylight_generator_table[:,4]
-    SD = S0 .+ M1*S1 .+ M2*S2
-    luminance_spec(daylight_generator_table[:,1],SD)
+    yD = -3.000 * xD^2 + 2.870 * xD - 0.275
+    M  = 0.0241 + 0.2562 * xD - 0.7341 * yD
+    M1 = (-1.3515 - 1.7703 * xD + 5.9114 * yD) / M
+    M2 = (0.03000 - 31.4424 * xD + 30.0717 * yD) / M
+    S0 = daylight_generator_table[:, 2]
+    S1 = daylight_generator_table[:, 3]
+    S2 = daylight_generator_table[:, 4]
+    SD = S0 .+ M1 * S1 .+ M2 * S2
+    luminance_spec(daylight_generator_table[:, 1], SD)
 end
 
 
 """
-`D_series_whitepoint(env::SpecEnv,T::Real)`
+    D_series_whitepoint(env::SpecEnv,T::Real)
 
 produces the white point according to the CIE Daylight Series.
 
 result: `::XYZ`
 """
-function D_series_whitepoint(env::SpecEnv,T::Real)
+function D_series_whitepoint(env::SpecEnv, T::Real)
     ×(D_series_illuminant(env,T), env.cmf)
 end
 
 
 """
-`D_series_whitepoint(T::Real)`
+    D_series_whitepoint(T::Real)
 
 produces the white point according to the CIE Daylight Series.
 
@@ -131,7 +134,7 @@ end
 
 
 """
-`D_series_illuminant(env::SpecEnv, T::Real)`
+    D_series_illuminant(env::SpecEnv, T::Real)
 
 produces CIE Daylight spectrum according to desired CCT.
 
@@ -140,17 +143,17 @@ result: `::LSpec`
 function D_series_illuminant(env::SpecEnv, T::Real)
     dlum = D_series_generator(T)
     if dlum.λ[1] < env.λmin || dlum.λ[end] > env.λmax
-        extr = extrap(linearspline(dlum.λ,dlum.l),collect(env.λmin:env.Δλ:env.λmax),:linear)
+        extr = extrap(linearspline(dlum.λ,dlum.l),collect(env.λmin:env.Δλ:env.λmax), :linear)
         intr = interp(extr,collect(env.λmin:env.Δλ:env.λmax))
     else
         intr = interp(dlum,collect(env.λmin:env.Δλ:env.λmax))
     end
-    luminance_spec(intr[1],intr[2])
+    luminance_spec(intr[1], intr[2])
 end
 
 
 """
-`D_series_illuminant(T::Real)`
+    D_series_illuminant(T::Real)
 
 produces CIE Daylight spectrum according to desired CCT.
 
@@ -163,59 +166,92 @@ end
 # Selection of standard daytime illuminants using proper CCTs
 
 """
-`D50_illuminant()`
+    D40_illuminant()
 
-Result: `::LSpec` of D50 illuminant, with a CCT of  5003K
+Result: `::LSpec` of D40 illuminant, with a CCT of  4003 K
 """
-D50_illuminant() = D_series_illuminant(5003)
-
-"""
-`D55_illuminant()`
-
-Result: `::LSpec` of D55 illuminant, with a CCT of  5503K
-"""
-D55_illuminant() = D_series_illuminant(5003)
+D40_illuminant() = D_series_proper_illuminant(4000)
 
 """
-`D65_illuminant()`
+    D50_illuminant()
 
-Result: `::LSpec` of D65 illuminant, with a CCT of 6504 K
+Result: `::LSpec` of D50 illuminant, with a CCT of  5003 K
 """
-D65_illuminant() = D_series_illuminant(6504)
+D50_illuminant() = D_series_proper_illuminant(5000)
 
 """
-`D75_illuminant()`
+    D55_illuminant()
 
-Result: `::LSpec` of D65 illuminant, with a CCT of 7504 K
+Result: `::LSpec` of D55 illuminant, with a CCT of  5503 K
 """
-D75_illuminant() = D_series_illuminant(7504)
+D55_illuminant() = D_series_proper_illuminant(5500)
+
+"""
+    D65_illuminant()
+
+Result: `::LSpec` of D55 illuminant, with a CCT of  6504 K
+"""
+D65_illuminant() = D_series_proper_illuminant(6500)
+
+
+"""
+    D75_illuminant()
+
+Result: `::LSpec` of D75 illuminant, with a CCT of 7504 K
+"""
+D75_illuminant() = D_series_proper_illuminant(7500)
+
+
+"""
+    D93_illuminant()
+
+Result: `::LSpec` of D93 illuminant, with a CCT of 9304 K
+"""
+D93_illuminant() = D_series_proper_illuminant(9300)
 
 # General standard daytime illuminants with proper CCTs
 
+
+"""
+    D_series_proper_illuminant(T::Real)
+
+Generates a D-series illuminant with the proper CCT. For example, a D65 illuminant has a proper CCT of 6504 K. CCT according to the International Practical Temperature Scale from 1968.
+"""
 function D_series_proper_illuminant(T::Real)
     D_series_illuminant(T * (1.4388 / 1.4380))
 end
 
 """
-`normalized_D_series_illuminant(T::Real)`
+    normalized_D_series(env::SpecEnv = SPECENV, T::Real)
 
 produces CIE Daylight spectrum according to desired CCT, normalized to l=100 at λ=560 nm.
 
-result: `::LSpec`
+# Examples
+```jldoctest
+julia> normalized_D_series(SPECENV, 6500)
+LSpec(Real[390.0, 391.0, 392.0, 393.0, 394.0, 395.0, 396.0, 397.0, 398.0, 399.0  …  821.0, 822.0, 823.0, 824.0, 825.0, 826.0, 827.0, 828.0, 829.0, 830.0], Real[0.5460212796545921, 0.5650827295052294, 0.590288902296674, 0.620011293254124, 0.6526213976027774, 0.6864907105678326, 0.7200645866061678, 0.7520838171013811, 0.7813630526687508, 0.8067169439235554  …  0.578028743266789, 0.5810475635333059, 0.5837744258575818, 0.5863553092107371, 0.5889361925638924, 0.5916338590939442, 0.5944483088008923, 0.5973503458905127, 0.6003107745685814, 0.6033003990408742])
+
+normalized_D_series(9300)
+LSpec(Real[390.0, 391.0, 392.0, 393.0, 394.0, 395.0, 396.0, 397.0, 398.0, 399.0  …  821.0, 822.0, 823.0, 824.0, 825.0, 826.0, 827.0, 828.0, 829.0, 830.0], Real[0.9296442162075731, 0.9527892027932645, 0.9854018656135435, 1.0248615127313507, 1.0685474522096268, 1.1138389921113123, 1.158318458802078, 1.2003802518585145, 1.2386217891599418, 1.2716404885856807  …  0.4869584146523383, 0.4894740470571454, 0.4917569270423351, 0.4939234308177161, 0.4960899345930971, 0.49834953933632503, 0.5007022450474, 0.5031247764843602, 0.5055938584052438, 0.5080862155680892])
+```
 """
-function normalized_D_series(env::SpecEnv,T::Real)
+function normalized_D_series(env::SpecEnv, T::Real)
     nT = normalize_D_series(D_series_generator(T))
-    sT = SSpline.cubicspline(nT.λ,nT.l,:natural)
+    sT = SSpline.cubicspline(nT.λ, nT.l,:natural)
     iT = SSpline.interp(sT, collect(env.λmin:env.Δλ:env.λmax))
     luminance_spec(iT[1], iT[2])
 end
 
+normalized_D_series(T::Real) = normalized_D_series(SPECENV, T)
+
 """
-`blackbody_illuminant(env::SpecEnv,T::Real)`
+    blackbody_illuminant(env::SpecEnv,T::Real)
 
 produces blackbody spectrum according to desired blackbody temperature in K.
 
-result: `::LSpec`
+# Examples
+```jldoctest
+```
 """
 function blackbody_illuminant(env::SpecEnv,T::Real)
     h = 6.62607015e-34 # [J*s] Planck’s constant
@@ -227,7 +263,7 @@ function blackbody_illuminant(env::SpecEnv,T::Real)
         λ = wl * 1e-9
         il[n] = (2 * π * h * c^2) / (λ[n]^5 * (exp(h * c / (λ[n] * k * T)) - 1))
     end
-    luminance_spec(wl,il)
+    luminance_spec(wl, il)
 end
 
 blackbody_illuminant(T::Real) = blackbody_illuminant(SPECENV, T)
@@ -237,33 +273,19 @@ blackbody_illuminant(T::Real) = blackbody_illuminant(SPECENV, T)
 
 produces the white point according to desired blackbody temperature in K.
 
-result: `::XYZ`
+# Examples
+```jldoctest
+```
 """
 function blackbody_whitepoint(env::SpecEnv, T::Real)
     ×(normalize_spec(blackbody_illuminant(env, T)), env.cmf)
 end
 
-
 # Illuminant A spectrum
 # Source: Dr. H. W. G. Hunt, “Measuring Colour”, third edition
 # Appendix 5, “Relative spectral power distributions of illuminants”
 """
-`illumiant_A()`
-
-Produces the spectrum of illuminant A, which represents tungsten-filament lighting.
-The relative spectral power distribution is equal to a Planckian spectrum at T ≊ 2856 K, which is also its CCT.
-
-CCT according to the *International Practical Temperature Scale* from 1968.
-
-This is the illuminant that should always be used when incandescent lighting is involved.
-
-result: `::LSpec`
-"""
-illuminant_A() = illuminant_A(SPECENV)
-
-
-"""
-`illumiant_A(env::SpecEnv)`
+    illuminant_A(env::SpecEnv = SPECENV)
 
 Produces the spectrum of illuminant A, which represents tungsten-filament lighting, depending on the limits defined by SPECENV.
 The relative spectral power distribution is equal to a Planckian spectrum at T ≊ 2856 K, which is also its CCT.
@@ -272,9 +294,13 @@ CCT according to the *International Practical Temperature Scale* from 1968.
 
 This is the illuminant that should always be used when incandescent lighting is involved.
 
-result: `::LSpec`
+# Example
+```jldoctest
+julia> illuminant_A()
+LSpec(Real[390.0, 391.0, 392.0, 393.0, 394.0, 395.0, 396.0, 397.0, 398.0, 399.0  …  821.0, 822.0, 823.0, 824.0, 825.0, 826.0, 827.0, 828.0, 829.0, 830.0], Real[1.0161486323473047e11, 1.0369227145593657e11, 1.05797774054285e11, 1.0793148447599527e11, 1.1009351284197664e11, 1.1228396592637178e11, 1.1450294713618913e11, 1.1675055649202544e11, 1.1902689060987242e11, 1.2133204268399858e11  …  2.17270715240179e12, 2.1757420157602646e12, 2.178757889232851e12, 2.1817547874185107e12, 2.1847327254181292e12, 2.1876917188295703e12, 2.190631783742765e12, 2.1935529367348203e12, 2.196455194865146e12, 2.199338575670583e12])
+```
 """
-function illumiant_A(env::SpecEnv)
+function illuminant_A(env::SpecEnv = SPECENV)
     blackbody_illuminant(env, 1.4388 / 1.4350 * 2848)
 end
 
@@ -283,15 +309,19 @@ end
 # Source: R. G. W. Hunt: “Measuring Colour”, third edition
 # Chapter 4.14, “Standard Illuminants B and C”
 """
-`illuminant_B(env::SpecEnv)`
+    illuminant_B(env::SpecEnv = SPECENV)
 
 Produces the spectrum of CIE Standard Illuminant B, with a CCT of ≈4874 K.
 Originally intended to represent sunlight.
 Now obsolete, but according to Hunt the European brewing industry still uses an approximation of this illuminant.
 
-Result: `::LSpec`
+# Example
+```jldoctest
+julia> illuminant_B()
+LSpec(Real[390.0, 391.0, 392.0, 393.0, 394.0, 395.0, 396.0, 397.0, 398.0, 399.0  …  821.0, 822.0, 823.0, 824.0, 825.0, 826.0, 827.0, 828.0, 829.0, 830.0], Real[0.313, 0.3223587343061588, 0.3319703445293299, 0.3417825875994216, 0.3517432204463422, 0.3618, 0.3719111024629742, 0.38207638112852754, 0.3923061085625939, 0.4026105573311068  …  7.557164594645486e-6, 9.446455743306857e-6, 7.557164594645484e-6, 3.778582297322749e-6, 1.734723475976807e-20, -2.267149378393646e-6, -3.0228658378581947e-6, -2.6450076081259192e-6, -1.5114329189290965e-6, -2.168404344971009e-21])
+```
 """
-function illuminant_B(env::SpecEnv)
+function illuminant_B(env::SpecEnv = SPECENV)
     b = b_c_series_table
     bsp = SSpline.cubicspline(b[:,1], b[:,2], :natural)
     bin = SSpline.interp(bsp, collect(env.λmin:env.Δλ:env.λmax))
@@ -299,28 +329,20 @@ function illuminant_B(env::SpecEnv)
 end
 
 
-"""
-`illuminant_B()`
-
-Produces the spectrum of CIE Standard Illuminant B, with a CCT of ≈4874 K.
-Originally intended to represent sunlight.
-Now obsolete, but according to Hunt the European brewing industry still uses an approximation of this illuminant.
-
-Result: `::LSpec`
-"""
-illuminant_B() = illuminant_B(SPECENV)
-
-
 # CIE Standard Illuminant C
 # Source: R. G. W. Hunt: “Measuring Colour”, third edition
 # Chapter 4.14, “Standard Illuminants B and C”
 """
-`illuminant_C(env::SpecEnv)`
+    illuminant_C(env::SpecEnv)
 
-Produces the spectrum of CIE Standard Illuminant C, with a CCT of ≈6774 K.
+Produces the spectrum of CIE Standard Illuminant C, with a CCT of ≈ 6774 K.
 Originally intended to represent average daylight.
 
-Result: `::LSpec`
+# Example
+```jldoctest
+julia> illuminant_C()
+LSpec(Real[390.0, 391.0, 392.0, 393.0, 394.0, 395.0, 396.0, 397.0, 398.0, 399.0  …  821.0, 822.0, 823.0, 824.0, 825.0, 826.0, 827.0, 828.0, 829.0, 830.0], Real[0.474, 0.489271743700384, 0.5046749637120697, 0.5202123118735634, 0.5358864400233714, 0.5517, 0.5676560269088902, 0.583759088923221, 0.6000141374831071, 0.616426124028662  …  0.7121636730114121, 0.7159995912642652, 0.7194836730114121, 0.722791836505706, 0.7261, 0.7295488980965763, 0.7331385307954352, 0.7368337144460056, 0.7405992653977175, 0.7444])
+```
 
 How the CIE Standard Illuminant C is produced:
 
@@ -328,18 +350,18 @@ Standard Source A is combined with a filter made of two 1 cm thick layers, conta
 The solutions are contained in a double cell that is made of a colorless optical glass.
 
 Solution C₁:
-      3.412 g copper sulphate (CuSO<sub>4</sub>·5H₂O)
-      3.412 g mannite [C<sub>6</sub>H<sub>8</sub>(OH)<sub>6</sub>]
-      30.0 ml pyridine (C<sub>5</sub>H<sub>5</sub>N)
-    1000.0 ml distilled water
+- 3.412 g copper sulphate (``CuSO_4·5H_2O``)
+- 3.412 g mannite [``C_6H_8(OH)_6``]
+- 30.0 ml pyridine (``C_5H_5N``)
+- 1000.0 ml distilled water
 
 Solution C₂:
-      30.58 g cobalt ammonium sulphate [CoSO<sub>4</sub>·(NH<sub>4</sub>)₂SO<sub>4</sub>·6H₂O]
-      22.52 g copper sulphate (CuSO<sub>4</sub>·5H₂O)
-      10.0 ml sulphuric acid (density 1.835 g/ml)
-    1000.0 ml distilled water
+- 30.58 g cobalt ammonium sulphate [``CoSO_4·(NH_4)_2SO_4·6H_2O``]
+- 22.52 g copper sulphate (``CuSO_4·5H_2O``)
+- 10.0 ml sulphuric acid (density 1.835 g/ml)
+- 1000.0 ml distilled water
 """
-function illuminant_C(env::SpecEnv)
+function illuminant_C(env::SpecEnv = SPECENV)
     c = b_c_series_table
     csp = SSpline.cubicspline(c[:,1], c[:,3], :natural)
     cin = SSpline.interp(csp, collect(env.λmin:env.Δλ:env.λmax))
@@ -348,71 +370,85 @@ end
 
 
 """
-`illuminant_C(env::SpecEnv)`
-
-Produces the spectrum of CIE Standard Illuminant C, with a CCT of ≈6774 K.
-Originally intended to represent average daylight.
-
-Result: `::LSpec`
-
-How the CIE Standard Illuminant C is produced:
-
-Standard Source A is combined with a filter made of two 1 cm thick layers, containing two solutions, C₁ and C₂.
-The solutions are contained in a double cell that is made of a colorless optical glass.
-
-Solution C₁:
-      3.412 g copper sulphate (CuSO<sub>4</sub>·5H₂O)
-      3.412 g mannite [C<sub>6</sub>H<sub>8</sub>(OH)<sub>6</sub>]
-      30.0 ml pyridine (C<sub>5</sub>H<sub>5</sub>N)
-    1000.0 ml distilled water
-
-Solution C₂:
-      30.58 g cobalt ammonium sulphate [CoSO<sub>4</sub>·(NH<sub>4</sub>)₂SO<sub>4</sub>·6H₂O]
-      22.52 g copper sulphate (CuSO<sub>4</sub>·5H₂O)
-      10.0 ml sulphuric acid (density 1.835 g/ml)
-    1000.0 ml distilled water
-"""
-illuminant_C() = illuminant_C(SPECENV)
-
-
-"""
-`F_series_illuminant(type::Symbol)`
+    F_series_illuminant(type::Symbol)
 
 Spectral power distribution of representative fluorescent lamps from 380 to 780 nm in 5 nm steps.
 
 Available types:
 
-    `:f1`, `:f2`, ... , `:f11`, `:f12`
+`:f1` ... `:f12`
 
-    `F2`, `F7`, and `F11` should be preferred over the other dirstributions as long as the choice in each of these three groups is not important or critical.
+`F2`, `F7`, and `F11` should be preferred over the other distributions
+as long as the choice in each of these three groups is not important or critical.
+The three recommendend illuminants are also marked in the CRI lists below.
 
 *For wavelength outside the `380 nm ... 780 nm` range the SPDs should be set to zero.*
 
 Result: `::LSpec`
 
-These are not CIE Standard Illuminants. They were compiled by the CIE as a representative collection of practical fluorescent lamps. The 12 lamps in this collection can be grouped in 3 groups:
+These are not CIE Standard Illuminants. They were compiled by the CIE as a representative
+collection of practical fluorescent lamps. The 12 lamps in this collection can be grouped
+in 3 groups:
 
-`normal`:       two semi-broad band emmisions of antimony and manganese activations in calcium halo-phosphate phosphor.
-    **CRI**   F1: 76     `*F2`: 64      F3: 57      F4: 51      F5: 72      F6: 59
+`normal`:       two semi-broad band emmisions of antimony and manganese activations in
+calcium halo-phosphate phosphor.
+
+**CRI table** 
+* F1: 76
+* `F2`: 64
+* F3: 57
+* F4: 51
+* F5: 72
+* F6: 59
 
 `broad-band`:   enhanced color rendering properties in comparison to the `normal` group, mostly by using multiple phosphors. Flatter spectral distributions with a wider spectral range.
-    **CRI:** `*F7:` 90    F8: 95      F9: 90
 
-`three-band`:   three narrow-band emissions in the red, green, and blue spectral regions. The narrow-band emissions are produced by ternary compositions of rare-earth phosphors.
-    **CRI:**    F10: 81     `*F11`: 83      F12: 83
+**CRI table**
+* `F7:` 90
+* F8: 95
+* F9: 90
+
+`three-band`:   three narrow-band emissions in the red, green, and blue spectral regions.
+The narrow-band emissions are produced by ternary compositions of rare-earth phosphors.
+
+**CRI table**
+* F10: 81
+* `F11`: 83
+* F12: 83
+
+# Examples
+```jldoctest
+julia> F_series_illuminant(:f11)
+LSpec(Real[390.0, 391.0, 392.0, 393.0, 394.0, 395.0, 396.0, 397.0, 398.0, 399.0  …  821.0, 822.0, 823.0, 824.0, 825.0, 826.0, 827.0, 828.0, 829.0, 830.0], Real[0.46, 0.442, 0.424, 0.406, 0.388, 0.37, 0.554, 0.738, 0.922, 1.1059999999999999  …  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+
+julia> F_series_illuminant(:f0)
+ERROR: DomainError with f0:
+F-series illuminant type does not exist.
+```
 """
 function F_series_illuminant(type::Symbol)
-    n = parse(Int,string(a)[2:end])
-    F_series_illuminant(SPECENV, n)
+    if type in (:f1, :f2, :f3, :f4, :f5, :f6, :f7, :f8, :f9, :f10, :f11, :f12)
+        n = parse(Int,string(type)[2:end])
+        F_series_illuminant(SPECENV, n)
+    else throw(DomainError(type, "F-series illuminant type does not exist."))
+    end
 end
 
 
 """
-`F_series_illuminant(n::Int)`
+    F_series_illuminant(n::Int)
 
 Return F series illuminant **Fn** for `n` from 1 to 12.
 
-Result: `::LSpec`
+# Examples
+```jldoctest
+julia> F_series_illuminant(1)
+LSpec(Real[390.0, 391.0, 392.0, 393.0, 394.0, 395.0, 396.0, 397.0, 398.0, 399.0  …  821.0, 822.0, 823.0, 824.0, 825.0, 826.0, 827.0, 828.0, 829.0, 830.0], Real[2.94, 3.046, 3.152, 3.258, 3.3640000000000003, 3.47, 3.81, 4.15, 4.49, 4.83  …  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+
+julia> F_series_illuminant(13)
+ERROR: DomainError with 13:
+F series illuminant outside the range 1 ≤ n ≤ 12.
+```
 """
 function F_series_illuminant(env::SpecEnv, n::Int)
     if 0 < n < 13
@@ -421,7 +457,7 @@ function F_series_illuminant(env::SpecEnv, n::Int)
         cin = SSpline.interp(csp, collect(env.λmin:env.Δλ:env.λmax))
         luminance_spec(cin[1], cin[2])
     else
-        DomainError("F series illuminant #$n outside the range 1 ≤ n ≤ 12.")
+        throw(DomainError(n, "F series illuminant outside the range 1 ≤ n ≤ 12."))
     end
 end
 
@@ -429,31 +465,38 @@ F_series_illuminant(n::Int) = F_series_illuminant(SPECENV, n)
 
 
 """
-`gas_discharge_illuminant(type::Symbol)`
+    gas_discharge_illuminant(type::Symbol)
 
 SPDs of common gas discharge lamps.
 
 available types:
 
-`:lps`:   Low pressure sodium
-`:hps`:   High pressure sodium
-`:mb`:    High pressure mercury
-`:mbf`:   High pressure mercury with red-emitting phosphor coating, better CRI than MB
-`:mbtf`:  High pressure mercury with red-emitting phopsphor coating and tungsten filament ballast, better CRI
-`:hmi`:   High pressure mercury with metal halides. Medium arc, iodides, typical stadium lighting, was used in television to supplement daylight
-`:xenon`: Xenon, used in film projectors in cinemas, floodlighting, in lighthouses, for accelerated fading tests, flash photography, lighting fluorescent materials
+* `:lps`:   Low pressure sodium
+* `:hps`:   High pressure sodium
+* `:mb`:    High pressure mercury
+* `:mbf`:   High pressure mercury with red-emitting phosphor coating, better CRI than MB
+* `:mbtf`:  High pressure mercury with red-emitting phopsphor coating and tungsten filament ballast, better CRI
+* `:hmi`:   High pressure mercury with metal halides. Medium arc, iodides, typical stadium lighting, was used in television to supplement daylight
+* `:xenon`: Xenon, used in film projectors in cinemas, floodlighting, in lighthouses, for accelerated fading tests, flash photography, lighting fluorescent materials
 
-Result: `::LSpec`
+# Example
+```jldoctest
+julia> gas_discharge_illuminant(:lps)
+LSpec(Real[390.0, 391.0, 392.0, 393.0, 394.0, 395.0, 396.0, 397.0, 398.0, 399.0  …  821.0, 822.0, 823.0, 824.0, 825.0, 826.0, 827.0, 828.0, 829.0, 830.0], Real[0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.08, 0.060000000000000005, 0.04000000000000001, 0.020000000000000004  …  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+
+julia> gas_discharge_illuminant(:xenon)
+LSpec(Real[390.0, 391.0, 392.0, 393.0, 394.0, 395.0, 396.0, 397.0, 398.0, 399.0  …  821.0, 822.0, 823.0, 824.0, 825.0, 826.0, 827.0, 828.0, 829.0, 830.0], Real[96.33, 97.176, 98.022, 98.868, 99.714, 100.56, 101.01, 101.46000000000001, 101.91, 102.36  …  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+```
 """
 function gas_discharge_illuminant(type::Symbol)
-    ifelse(type == :lps,  gas_discharge_illuminant(SPECENV, 1),
-    ifelse(type == :hps,  gas_discharge_illuminant(SPECENV, 2),
-    ifelse(type == :mb,   gas_discharge_illuminant(SPECENV, 3),
-    ifelse(type == :mbf,  gas_discharge_illuminant(SPECENV, 4),
-    iflese(type == :mbtf, gas_discharge_illuminant(SPECENV, 5),
-    iflese(type == :hmi,  gas_discharge_illuminant(SPECENV, 6),
-    ifelse(type == :xenon,gas_discharge_illuminant(SPECENV, 7),
-    DomainError("Lamp type $type does not exist!"))))))))
+    type == :lps  ? gas_discharge_illuminant(SPECENV, 1) :
+    type == :hps  ? gas_discharge_illuminant(SPECENV, 2) :
+    type == :mb   ? gas_discharge_illuminant(SPECENV, 3) :
+    type == :mbf  ? gas_discharge_illuminant(SPECENV, 4) :
+    type == :mbtf ? gas_discharge_illuminant(SPECENV, 5) :
+    type == :hmi  ? gas_discharge_illuminant(SPECENV, 6) :
+    type == :xenon ? gas_discharge_illuminant(SPECENV, 7) :
+    throw(DomainError(type, "Lamp type does not exist!"))
 end
 
 gas_discharge_illuminant(n::Int) = gas_discharge_illuminant(SPECENV, n)
@@ -472,13 +515,15 @@ function gas_discharge_illuminant(env::SpecEnv, n::Int)
         cin = SSpline.interp(csp, collect(env.λmin:env.Δλ:env.λmax))
         luminance_spec(cin[1], cin[2])
     else
-        DomainError("Gas discharge illuminant #$n outside the range 1 ≤ n ≤ 7.")
+        throw(DomainError(n, "Gas discharge illuminant index outside the range 1 ≤ n ≤ 7."))
     end
 end
 
 
 """
-`sinusoidal_spd(freq::Real, modfac::Real = 1.0, ampl::Real = 1.0, phase::Real, r = (SPECENV.λmin:SPECENV.Δλ:SPECENV.λmax))`
+    sinusoidal_spd(freq::Real, modfac::Real = 1.0, ampl::Real = 1.0, phase::Real, r = (SPECENV.λmin:SPECENV.Δλ:SPECENV.λmax))
+
+Generates a sinusoidal spectral power distribution. Useful for computational gamut and spectral calculations.
 """
 function sinusoidal_spd(stype::Symbol, freq::Real, modfac::Real = 1.0, ampl::Real = 1.0, phase::Real = 0.0, r = (SPECENV.λmin:SPECENV.Δλ:SPECENV.λmax))
     if 0 ≤ ampl ≤ 1.0
@@ -498,18 +543,6 @@ function sinusoidal_spd(stype::Symbol, freq::Real, modfac::Real = 1.0, ampl::Rea
         throw(DomainError(ampl, "Expecting a value 0 ≤ ampl ≤ 1.0."))
     end
 end
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

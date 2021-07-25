@@ -23,39 +23,65 @@
 × operator : “color of” operator, for whitepoints etc.
 =#
 
+
 """
-`*(::LSpec, ::RSpec)``
+    *(a::LSpec, b::RSpec)
 
 results in a luminance spectrum `LSpec` due to an illuminant spectrum reflected by a reflectance spectrum.
 
 Result: `LSpec`
 """
-function *(l::LSpec,r::RSpec)
-    LSpec(l.λ, l.l .* r.r)
+function *(a::LSpec,b::RSpec)
+    luminance_spec(a.λ, a.l .* b.r)
 end
+
+*(a::LSpec, b::RSpec, c...) = *((a * b), c...)
 
 
 """
-`*(::LSpec, ::TSpec)``
+    *(a::LSpec, a::TSpec)
 
 results in a luminance spectrum `LSpec` due to an illuminant filtered by a transmission spectrum.
-
-Result: `LSpec`
 """
-function *(l::LSpec,f::TSpec)
-    LSpec(l.λ, l.l .* f.t.^f.x)
+function *(a::LSpec,b::TSpec)
+    luminance_spec(a.λ, a.l .* b.t.^b.x)
 end
 
-"""
-`*(::TSpec, ::TSpec)`
+*(a::LSpec, b::TSpec, c...) = *((a * b), c...)
 
-results in a transmission spectrum `TSpec` due to the combination of two transmissive spectra, using Bouguer’s/Beer’s Law. Combination of two filters.
-
-Result: `TSpec`
 """
-function *(f1::TSpec,f2::TSpec)
-    transmittance_spec(f1.λ, f1.t.^f1.x .* f2.t.^f2.x,1.0)
+    *(a::RSpec, b::RSpec)
+
+Interreflection between two reflective surfaces
+
+# Example:
+```jldoctest
+julia> macbeth(:Macbeth_chart1, :red) * macbeth(:Macbeth_chart1, :orange)
+RSpec(Real[380.0, 390.0, 400.0, 410.0, 420.0, 430.0, 440.0, 450.0, 460.0, 470.0  …  640.0, 650.0, 660.0, 670.0, 680.0, 690.0, 700.0, 710.0, 720.0, 730.0], Real[0.002597, 0.002544, 0.0024909999999999997, 0.0024909999999999997, 0.0024909999999999997, 0.002538, 0.002538, 0.002484, 0.0024749999999999998, 0.00252  …  0.376929, 0.394878, 0.40763199999999994, 0.42066499999999996, 0.43686499999999995, 0.4553, 0.472696, 0.48322000000000004, 0.486576, 0.49293200000000004])
+```
+"""
+function *(a::RSpec, b::RSpec)
+    reflectance_spec(a.λ, a.r .* b.r)
 end
+
+*(a::RSpec, b::RSpec, c...) = *((a * b), c...)
+
+
+"""
+    *(a::TSpec, b::TSpec)
+
+Stacking of two filters.
+
+Results in a transmission spectrum `TSpec` due to the combination of two transmissive spectra using Bouguer’s/Beer’s Law.
+
+"""
+function *(a::TSpec, b::TSpec)
+    transmittance_spec(a.λ, a.t.^a.x .* b.t.^b.x, 1.0)
+end
+
+*(a::TSpec, b::TSpec, c...) = *((a * b), c...)
+
+
 
 ############
 # + operator
@@ -65,13 +91,50 @@ end
 #
 # always results in a reflectance spectrum
 #
-function +(l::RSpec, r::RSpec, ratio=0.5)
-    if 0 < ratio <= 1.0
-        return reflectance_spec(l.λ,(ratio.*l.r .+ (1.0-ratio).*r.r))
-    else error("Ratio must be between 0.0 and 1.0")
+
+"""
+    +(a::LSpec, b::LSpec)
+
+Combination of two luminance spectra. Additive mixture.
+
+# Examples:
+
+```jldoctest
+julia> D_series_illuminant(6504) + D_series_illuminant(4010)
+LSpec(Real[390.0, 391.0, 392.0, 393.0, 394.0, 395.0, 396.0, 397.0, 398.0, 399.0  …  821.0,
+822.0, 823.0, 824.0, 825.0, 826.0, 827.0, 828.0, 829.0, 830.0], Real[71.28837977644169,
+75.09766988566693, 78.90695999489216, 82.7162501041174, 86.52554021334264, 90.33483032256788,
+94.14412043179311, 97.95341054101836, 101.7627006502436, 105.57199075946883  … 148.07280275201228,
+148.84652207565884, 149.6202413993054, 150.39396072295196, 151.16768004659852, 151.94139937024508,
+152.7151186938916, 153.48883801753817, 154.26255734118473, 155.0362766648313])
+```
+"""
+function +(a::LSpec, b::LSpec)
+    luminance_spec(a.λ, a.l .+ b.l)
+end
+
++(a::LSpec, b::LSpec, c...) = +((a + b), c...)
+
+"""
+    +(a::RSpec, b::RSpec, ratio=0.5)
+
+Linear combination of two reflectance spectra at a given ratio `r * a / (1 - r) * b`.
+
+Warning: This is *not* a physically realistic colorant mixing method!
+
+# Examples
+
+```jldoctest
+```
+"""
+function +(a::RSpec, b::RSpec, ratio = 0.5)
+    if 0 ≤ ratio ≤ 1.0
+        return reflectance_spec(a.λ, (ratio .* a.r .+ (1.0 - ratio) .* b.r))
+    else throw(DomainError(ratio, "Expecting 0.0 ≤ ratio ≤ 1.0"))
     end
 end
 
++(a::RSpec, b::RSpec, c...) = +((a + b), c...)
 
 ############
 # × operator
@@ -83,13 +146,16 @@ end
 # light > color matching function (white point of a light source)
 #
 """
-`×(l::LSpec,cmf::CMatch)`
+    ×(l::LSpec, cmf::CMatch)
 
-create white point of a light source in `XYZ` color space.
+Create white point of a light source in `XYZ` color space.
 
-`light source` -> `CMF`
+# Examples:
+
+```jldoctest
+```
 """
-function ×(l::LSpec,cmf::CMatch)
+function ×(l::LSpec, cmf::CMatch)
     y=sum(l.l .* cmf.y)
     Colors.XYZ(sum(l.l .* cmf.x)/y, 1.0, sum(l.l .* cmf.z)/y)
 end
@@ -98,13 +164,14 @@ end
 # 
 # conversion from spectra to XYZ
 """
-`×(l::LSpec, r::RSpec, cmf::CMatch)`
+    ×(l::LSpec, r::RSpec, cmf::CMatch)
 
-Returns color of Light reflected off a surface.
+Returns `XYZ` color of an illuminant spectrum reflected off a surface.
 
-`light source` > `reflectance` > `CMF` (color of illuminated surface)
+# Examples:
 
-Result: `::XYZ`
+```jldoctest
+```
 """
 function ×(l::LSpec, r::RSpec, cmf::CMatch)
     wm= (l.l .* cmf.y)
@@ -114,21 +181,26 @@ end
 
 
 """
-`×(l::LSpec, t::TSpec, cmf::CMatch)`
+    ×(l::LSpec, t::TSpec, cmf::CMatch)
 
-Returns color of Light transmitted through a filter.
+Returns the `XYZ` color of an illuminant transmitted through a filter.
 
-`light source` > `transmittance` > `CMF` (color of filtered light)
+# Examples:
 
-Result: `::XYZ`
+```jldoctest
+```
 """
 function ×(l::LSpec, t::TSpec, cmf::CMatch)
     wm= (l.l .* cmf.y)
     refl = l.l .* t.t
-    Colors.XYZ(sum(refl .* cmf.x)/sum(wm), sum(refl .* cmf.y)/sum(wm), sum(refl .* cmf.z)/sum(wm))
+    Colors.XYZ(sum(refl .* cmf.x) / sum(wm), sum(refl .* cmf.y) / sum(wm), sum(refl .* cmf.z) / sum(wm))
 end
 
+"""
+    (a::Array{Real,2}, c::ConeFund)
 
+Convert cone fundamentals to CMFs.
+"""
 function *(a::Array{Real,2}, c::ConeFund)
     if typeof(c) in (LMS31, LMS64, LMS06_2, LMS06_10)
         mat = a * [c.l, c.m, c.s]

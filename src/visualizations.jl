@@ -65,8 +65,8 @@ Creates gamut given by Temperature range
 function gamut_vis(type,T1::Real,dT::Real,T2::Real,colmatch,name::AbstractString,altitude::Real,azimuth::Real,slice=collect(5:5:95))
     println("Preparing gamut... this may take about 30s.")
     for T in T1:dT:T2
-        lum=normalize_spec(blackbody_illuminant(T,390,1,830))
-        wp=blackbody_whitepoint(T,390,1,830,colmatch)
+        lum=normalize_spec(blackbody_illuminant(SPECENV, T))
+        wp=blackbody_whitepoint(SPECENV, T)
         a,b,c=sl(type,lum,wp,colmatch,390.0,1.0,830.0)
         println("Creating animation frames... this may take a while.")
         n=name

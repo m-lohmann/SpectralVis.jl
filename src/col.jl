@@ -42,7 +42,7 @@ function col(type,lum::LSpec,whitepoint::Color3,colmatch,dl)
     @inbounds for i in 390:830-dl+1
         bs=block_spec(390,830,1.0,i,i+dl-1,1.0,0)*wp
         xyzcol=(bs*cmf(colmatch))/XYZ(1,1/normfact,1).y
-        labcol=convert(type,convert(Colors.Lab,xyzcol,whitepoint))
+        labcol=convert(type,Colors.convert(Colors.Lab,xyzcol,whitepoint))
         push!(locus1,labcol)
     end
     if type == XYZ
@@ -69,7 +69,7 @@ function col(type,lum::LSpec,whitepoint::Color3,colmatch,dl)
     @inbounds for i in 390:830-dl+1
         bs=block_spec(390,830,1.0,i,i+dl-1,1.0,1)*wp
         xyzcol=(bs*cmf(colmatch))/XYZ(1,1/normfact,1).y
-        labcol=convert(type,convert(Colors.Lab,xyzcol,whitepoint))
+        labcol=convert(type,Colors.convert(Colors.Lab,xyzcol,whitepoint))
         push!(locus2,labcol)
     end
     if type == XYZ
@@ -128,14 +128,14 @@ function colv(type,lum::LSpec,whitepoint::Color3,colmatch,s) # s = start
     @inbounds for h in 0.0:0.05:0.95
         bs=block_spec(390,830,1.0,s,s,h,0)*wp
         xyzcol=(bs*cmf(colmatch))/XYZ(1,1/normfact,1).y
-        labcol=convert(type,convert(Colors.Lab,xyzcol,whitepoint))
+        labcol=convert(type,Colors.convert(Colors.Lab,xyzcol,whitepoint))
         push!(locus1,labcol)
     end
     # normal spectrals
     @inbounds for i in s:830
         bs=block_spec(390,830,1.0,s,i,1.0,0)*wp
         xyzcol=(bs*cmf(colmatch))/XYZ(1,1/normfact,1).y
-        labcol=convert(type,convert(Colors.Lab,xyzcol,whitepoint))
+        labcol=convert(type,Colors.convert(Colors.Lab,xyzcol,whitepoint))
         push!(locus1,labcol)
     end
     if type == XYZ
@@ -168,7 +168,7 @@ function colv(type,lum::LSpec,whitepoint::Color3,colmatch,s) # s = start
     @inbounds for i in s:830
         bs=block_spec(390,830,1.0,s,i,1.0,1)*wp
         xyzcol=(bs*cmf(colmatch))/XYZ(1,1/normfact,1).y
-        labcol=convert(type,convert(Colors.Lab,xyzcol,whitepoint))
+        labcol=convert(type,Colors.convert(Colors.Lab,xyzcol,whitepoint))
         push!(locus2,labcol)
     end
     if type == XYZ

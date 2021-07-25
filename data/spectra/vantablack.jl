@@ -1,3 +1,8 @@
+"""
+    vantablack()
+
+Vantablack spectrum from 264.6 to 16310.0 nm
+"""
 function vantablack()
     RSpec(vantablack[:,1],vantablack[:,2])
 end

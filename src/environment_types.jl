@@ -32,10 +32,10 @@ Initializes the spectral environment to standard values:
 λmin = 380.0 nm
 λmax = 830.0 nm
 Δλ   =   1.0 nm
-cmf  = cmf(:cie12_10)
+cmf  = cmfunc(:cie12_10)
 ex = :linear
 """
-function set_specenv(λmin = 390.0, Δλ = 1.0, λmax = 830.0, cmf = cmf(:cie12_10), ex = :linear)
+function set_specenv(λmin = 390.0, Δλ = 1.0, λmax = 830.0, cmf = cmfunc(:cie12_10), ex = :linear)
     SpecEnvironment(λmin,Δλ,λmax,cmf,ex)
 end
 
@@ -57,7 +57,7 @@ Sets the extrapolation mode of the environment `env` to one of the available ext
 """
 function set_extrap(env::SpecEnvironment,extrapolation::Symbol)
     extrapolation in (:none, :boundary, :linear, :parabolic) ? env.ex = extrapolation :
-    extrapolation == :zero ? set_extrap(env, :none) : error("Extrapolation mode $extrapolation does not exist!")
+    extrapolation == :zero ? set_extrap(env, :none) : throw(DomainError(extrapolation,"Extrapolation mode does not exist!"))
 end
 
 

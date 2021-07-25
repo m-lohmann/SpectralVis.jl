@@ -13,22 +13,22 @@ using Reexport
     export  luminance_spec, reflectance_spec, transmittance_spec, cmfmat, normalize_spec, hardlimit_spec, reinterpolate, mbspec, mbcolor
 
     # cmf and cone fundamental functions
-    export cmf, conefund
+    export cmfunc, conefund, colorvisiondeficiency, vybrg
 
     # spectral types
     export  LSpec, RSpec, TSpec
 
     # multispectral types (CMFs and associated cone fundamentals)
-    export  CIE31, LMS31, CIE31_J, CIE31_JV, CIE64, LMS64, CIE12_2, LMS06_2, CIE12_10, LMS06_10, WSYBRG, CMatch, ConeFund, Spectrum, Multispectral
+    export  CIE31, LMS31, CIE31_J, CIE31_JV, CIE64, LMS64, CIE12_2, LMS06_2, CIE12_10, LMS06_10, VYBRG, CMatch, ConeFund, COpp, Spectrum, Multispectral
 
     # special functions
-    export  normalize_spec, normalize_D_series, normalize_blackbody, adapt_spec, sconv, d_whitepoint, shift_spec, shift_colormatch, deactivate_cone, conefund, convmat, opponentcolor
+    export  normalize_spec, normalize_D_series, normalize_blackbody, adapt_spec, sconv, d_whitepoint, shift_spec, shift_cone, deactivate_cone, conefund, convmat
 
     # conversions
-    export chromatic_adaptation, coneresponse, INGLING_TSOU, opponentcolor, OCS, mlms_ycc
+    export chromatic_adaptation, coneresponse, INGLING_TSOU, inglingtsou_opponent, OCS, mlms_ycc
     
     # spectral operators
-    export ×, *
+    export ×, *, +
     
     # color matching function tables
     export  CMF1931, CMF1931_J, CMF1931_JV, CMF1964, CMF2012_2, CMF2012_10
@@ -37,16 +37,16 @@ using Reexport
     export  LMS2006_2, LMS2006_10
     
     # spectra
-    export  mars_sky_opportunity, mer_caltarget, pancam_L2, pancam_L3, pancam_Lpancam_L5, pancam_L6, pancam_L7, macbeth, munsell_specs, munsell_spec, munsell_keys,munsell_dict, wratten, wratten_filter, WrattenVis, WrattenIR, Wrattenfilters, mineral_specs, mineral
+    export  mars_sky_opportunity, mer_caltarget, pancam_L2, pancam_L3, pancam_Lpancam_L5, pancam_L6, pancam_L7, macbeth, munsell_specs, munsell_spec, munsell_keys,munsell_dict, wratten, wratten_filter, WrattenVis, WrattenIR, Wrattenfilters, mineral_specs, mineral, agfait_specs, agfait, vantablack
     
     # spectral generator tables
     export daylight_generator_table, b_c_series_table, f_series_table, gas_discharge_table, water_constants
 
     # spectral generators
-    export  block_spec, led_spec, D_series_generator, D_series_illuminant, normalized_D_series, D_series_whitepoint, blackbody_illuminant, blackbody_whitepoint, D50_illuminant, D55_illuminant, D65_illuminant, D75_illuminant, illuminant_A, illuminant_B, illuminant_C, F_series_illuminant, gas_discharge_illuminant, sinusoidal_spd
+    export  block_spec, led_spec, D_series_generator, D_series_illuminant, normalized_D_series, D_series_whitepoint, blackbody_illuminant, blackbody_whitepoint, D40_illuminant, D50_illuminant, D55_illuminant, D65_illuminant, D75_illuminant, D93_illuminant, illuminant_A, illuminant_B, illuminant_C, F_series_illuminant, gas_discharge_illuminant, sinusoidal_spd
     
     # matrix R, fundamental metamers, metameric blacks
-    export  tristimulus, matrix_A, matrix_R, fundamental_metamer, metameric_black
+    export  tristimulus, matrixA, matrixR, fundamental_metamer, metameric_black, cohen_pair
     
     # JND/color discrimination ellipse functions
     export ellipses, ellipse_parameters, ellipse, ellipse_a, ellipse_b, ellipse_θ, ellipse_center, ellipse_l0, ellipse_luminance, ellipse_g11, ellipse_g12, ellipse_g13, ellipse_g22, ellipse_g23, draw_ellipses
@@ -69,8 +69,6 @@ using Reexport
     include("special_functions.jl")
     include("spectral_generators.jl")
     include("spectral_operators.jl")
-    include("readmunsell.jl")
-    include("mineral_read.jl")
     include("matrix_R.jl")
     include("ellipse_functions.jl")
 
@@ -78,18 +76,24 @@ using Reexport
     include("spectral_generator_tables.jl")
 
     # Real world spectral data
-    const datapath="../data/"
+    const datapath = "../data/"
+    const specpath = datapath * "spectra/"
+    const ellipsepath = datapath * "ellipses/"
     # MER Pancam data:
     # Mars Sky spectrum measured by Opportunity
-    include(datapath*"/spectra/spectrum_MarsSkyOpp.jl")
+    include(specpath * "spectrum_MarsSkyOpp.jl")
     # Spirit/Opportunity calibration target spectra
-    include(datapath*"spectra/spectrum_MERCaltarget.jl")
+    include(specpath * "spectrum_MERCaltarget.jl")
     # Pancam color filter spectra
-    include(datapath*"/spectra/spectrum_Pancam.jl")
-    include(datapath*"/spectra/spectrum_MacBeth.jl")
-    include(datapath*"/spectra/spectrum_Wratten.jl")
+    include(specpath * "spectrum_Pancam.jl")
+    include(specpath * "spectrum_MacBeth.jl")
+    include(specpath * "spectrum_Wratten.jl")
+    # Other spectra and reading functions
+    include(specpath * "specread_munsell.jl")
+    include(specpath * "specread_mineral.jl")
+    include(specpath * "specread_agfait.jl")
     # MacAdam ellipses etc.
-    include(datapath*"/ellipses/ellipse_datasets.jl")
+    include(ellipsepath * "ellipse_datasets.jl")
     # visualizations
     include("visualizations.jl")
     # doodles

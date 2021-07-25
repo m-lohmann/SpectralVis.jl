@@ -23,7 +23,8 @@
 =#
 
 
-# experiment luminance data in 
+# experiment luminance data in [cd/m²]
+#  background | test field
 const ELLIPSE_LUMINANCE_DATA =
     #PGN_bg, PGN_lum
    [24.0     48.0;
