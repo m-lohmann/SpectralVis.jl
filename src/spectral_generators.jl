@@ -471,12 +471,12 @@ SPDs of common gas discharge lamps.
 
 available types:
 
-* `:lps`:   Low pressure sodium
-* `:hps`:   High pressure sodium
-* `:mb`:    High pressure mercury
-* `:mbf`:   High pressure mercury with red-emitting phosphor coating, better CRI than MB
-* `:mbtf`:  High pressure mercury with red-emitting phopsphor coating and tungsten filament ballast, better CRI
-* `:hmi`:   High pressure mercury with metal halides. Medium arc, iodides, typical stadium lighting, was used in television to supplement daylight
+* `:lps`,`:lp_sodium`:   Low pressure sodium
+* `:hps`,`:hp_sodium`:   High pressure sodium
+* `:mb`,`:hp_mercury`:   High pressure mercury
+* `:mbf`,`:hp_mercury_phosphor`:   High pressure mercury with red-emitting phosphor coating, better CRI than MB
+* `:mbtf`,`:hp_mercury_phosphor_tungsten`:  High pressure mercury with red-emitting phopsphor coating and tungsten filament ballast, better CRI
+* `:hmi`,`hp_mercury_metalhalide`:   High pressure mercury with metal halides. Medium arc, iodides, typical stadium lighting, was used in television to supplement daylight
 * `:xenon`: Xenon, used in film projectors in cinemas, floodlighting, in lighthouses, for accelerated fading tests, flash photography, lighting fluorescent materials
 
 # Example
@@ -489,13 +489,13 @@ LSpec(Real[390.0, 391.0, 392.0, 393.0, 394.0, 395.0, 396.0, 397.0, 398.0, 399.0 
 ```
 """
 function gas_discharge_illuminant(type::Symbol)
-    type == :lps  ? gas_discharge_illuminant(SPECENV, 1) :
-    type == :hps  ? gas_discharge_illuminant(SPECENV, 2) :
-    type == :mb   ? gas_discharge_illuminant(SPECENV, 3) :
-    type == :mbf  ? gas_discharge_illuminant(SPECENV, 4) :
-    type == :mbtf ? gas_discharge_illuminant(SPECENV, 5) :
-    type == :hmi  ? gas_discharge_illuminant(SPECENV, 6) :
-    type == :xenon ? gas_discharge_illuminant(SPECENV, 7) :
+    type in (:lps,:lp_sodium)  ? gas_discharge_illuminant(SPECENV, 1) :
+    type in (:hps,:hp_sodium)  ? gas_discharge_illuminant(SPECENV, 2) :
+    type in (:mb,:lp_mercury)   ? gas_discharge_illuminant(SPECENV, 3) :
+    type in (:mbf,:lp_mercury_phosphor)  ? gas_discharge_illuminant(SPECENV, 4) :
+    type in (:mbtf,:lp_mercury_tungsten) ? gas_discharge_illuminant(SPECENV, 5) :
+    type in (:hmi,:hp_mercury_metalhalide)  ? gas_discharge_illuminant(SPECENV, 6) :
+    type in (:xenon) ? gas_discharge_illuminant(SPECENV, 7) :
     throw(DomainError(type, "Lamp type does not exist!"))
 end
 
@@ -523,7 +523,7 @@ end
 """
     sinusoidal_spd(freq::Real, modfac::Real = 1.0, ampl::Real = 1.0, phase::Real, r = (SPECENV.λmin:SPECENV.Δλ:SPECENV.λmax))
 
-Generates a sinusoidal spectral power distribution. Useful for computational gamut and spectral calculations.
+Generates a sinusoidal spectral power distribution. Useful for computational gamut and spectral calculations. Frequency in [1/nm], phase in [nm].
 """
 function sinusoidal_spd(stype::Symbol, freq::Real, modfac::Real = 1.0, ampl::Real = 1.0, phase::Real = 0.0, r = (SPECENV.λmin:SPECENV.Δλ:SPECENV.λmax))
     if 0 ≤ ampl ≤ 1.0

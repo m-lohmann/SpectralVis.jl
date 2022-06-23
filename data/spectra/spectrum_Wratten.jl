@@ -247,7 +247,7 @@ end
 
 returns `TSpec` of one of the Wratten filters at unit thickness.
 """
-wratten_filter(f::Int) = wratten_filter(f, 1.0)
+wratten_filter(f::Int) = wratten_filter(f, 1.0, SPECENV)
 
 
 """

@@ -1,25 +1,28 @@
-"""
-`normalize_spec(s::Spectrum)`
-
-returns a spectrum with reflectance values normalized to 1.0
-"""
-function normalize_spec(s::Spectrum)
-    isa(s, LSpec) ? normalize_spec(s, maximum(s.l)) :
-    isa(s, RSpec) ? normalize_spec(s, maximum(s.r)) :
-    isa(s, TSpec) ? normalize_spec(s, maximum(s.t)) :
-    nothing
-end
+# """
+# `normalize_spec(s::Spectrum)`
+# 
+# returns a spectrum with reflectance values normalized to 1.0
+# """
+# function normalize_spec(s::Spectrum)
+#     isa(s, LSpec) ? normalize_spec(s, maximum(s.l)) :
+#     isa(s, RSpec) ? normalize_spec(s, maximum(s.r)) :
+#     isa(s, TSpec) ? normalize_spec(s, maximum(s.t)) : nothing
+# 
+#     #isa(s, LSpec) ? luminance_spec(s.λ, s.l ./ maximum(s.l)) :
+#     #isa(s, RSpec) ? reflectance_spec(s.λ, s.r ./ maximum(s.r)) :
+#     #isa(s, TSpec) ? transmittance_spec(s.λ, s.t ./ maximum(s.t)) : nothing
+# end
 
 
 """
 `normalize_spec(s::Spectrum,value::Real)`
 
-returns a spectrum with reflectance distribution normalized to `value` relative to max.
+returns a spectrum with reflectance distribution normalized to `value`.
 """
-function normalize_spec(s::Spectrum,value::Real)
-    isa(s, RSpec) ? reflectance_spec(s.λ, s.r ./ (maximum(s.r) ./ value)) :
-    isa(s, LSpec) ? luminance_spec(s.λ, s.l ./ (maximum(s.l) ./ value)) :
-    isa(s, TSpec) ? transmittance_spec(s.λ, s.t ./ (maximum(s.t) ./ value), 1.0) : nothing
+function normalize_spec(s::Spectrum, value = 1.0)
+    isa(s, RSpec) ? reflectance_spec(s.λ, s.l ./ (maximum(s.r) * value)) :
+    isa(s, LSpec) ? luminance_spec(s.λ, s.l ./ (maximum(s.l) * value)) :
+    isa(s, TSpec) ? transmittance_spec(s.λ, s.l ./ (maximum(s.t) * value)) : nothing
 end
 
 
@@ -34,11 +37,12 @@ end
 
 
 """
-    `normalize_blackbody(s::Spectrum)`
+    `normalize_blackbody(env = SPECENV, T::Real)`
 
 Normalize a blackbody spectrum analogous to D series to 1.0 at 560 nm.
 """
-function normalize_blackbody(s::Spectrum)
+function normalize_blackbody(T::Real, env = SPECENV)
+    s = blackbody_illuminant(env, T)
     ind = findfirst(isequal(560.0), s.λ)
     luminance_spec(s.λ, s.l ./ s.l[ind])
 end
@@ -230,7 +234,7 @@ end
 
 
 """
-    deactivate_cone(cmf::ConeFund, conetype::Symbol
+    deactivate_cone(cmf::ConeFund, conetype::Symbol)
 
 returns cone fundamental either `l`, `m`, or `s` cone function deactivated.
 

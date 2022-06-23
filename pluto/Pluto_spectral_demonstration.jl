@@ -1,11 +1,15 @@
 ### A Pluto.jl notebook ###
-# v0.14.7
+# v0.19.3
 
 using Markdown
 using InteractiveUtils
 
 # ╔═╡ 08af84c0-2456-11eb-326c-2d675ca197af
-using SpectralVis
+begin
+	import Pkg
+	Pkg.add(path = "c:/Users/4vektor/.julia/dev/SpectralVis")
+	using SpectralVis
+end
 
 # ╔═╡ 57a60da0-2461-11eb-07df-2b3ab48a6675
 using Colors
@@ -22,7 +26,7 @@ begin
     #DarkMode.enable(theme="material-palenight", cm_config=Dict("tabSize" => 4))
 	#DarkMode.enable()
     #DarkMode.Toolbox(theme="default")
-	html"""<style> main {max-width: 900px;}"""
+	html"""<style> main {max-width: 1000px;}"""
 end
 
 # ╔═╡ 78adafde-247e-11eb-12e1-ddea99d50711
@@ -119,7 +123,7 @@ plot(bb6500K.λ,bb6500K.l,labels=false)
 md"Whoa! The luminance values are crazy high! That’s because of the units `[J/m³/s]`. It’s easy to mitigate that. Let’s normalize this spectrum to a peak value of 1.0. To normalize a spectrum, use the `normalize_spec` function as follows:"
 
 # ╔═╡ 00a64130-2463-11eb-1ed2-29a671508315
-bb65=normalize_spec(bb6500K)
+bb65=normalize_blackbody(6500)
 
 # ╔═╡ 1e781300-2463-11eb-2b3e-ff33d0043b07
 md"Let’s have a look at the spectrum in a graph:"

@@ -21,7 +21,7 @@ available color names:
 
 :white95, :neutral8, :neutral65, :neutral5, :neutral35, :black2
 """
-function macbeth(colorchart::Symbol,color::Symbol)
+function macbeth(colorchart::Symbol,color::Symbol,mode = :raw)
     chart = eval(colorchart)
     color == :darkskin ? reflectance_spec(chart[:,1],chart[:,2]) :
     color == :lightskin ? reflectance_spec(chart[:,1],chart[:,3]) :
@@ -47,6 +47,13 @@ function macbeth(colorchart::Symbol,color::Symbol)
     color == :neutral5 ? reflectance_spec(chart[:,1],chart[:,23]) :
     color == :neutral35 ? reflectance_spec(chart[:,1],chart[:,24]) :
     color == :black2 ? reflectance_spec(chart[:,1],chart[:,25]) : error("Color does not exist.")
+    if mode == :raw
+        return color
+    elseif mode == :interp
+        s = spline3(color[1],color[2],:natural)
+        e = extrap(s,SPECENV.λmin:SPECENV.λmax,:quadratic)
+        return interp(e,SPECENV.λmin:SPECENV.Δλ:SPECENV.λmax)
+    end
 end
 
 """

@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.14.7
+# v0.19.0
 
 using Markdown
 using InteractiveUtils
@@ -7,21 +7,32 @@ using InteractiveUtils
 # This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
 macro bind(def, element)
     quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
         local el = $(esc(element))
-        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : missing
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
         el
     end
 end
 
-# ╔═╡ 37080ff2-a3b7-11eb-3634-af524d492479
-using Plots, SSpline, SpectralVis
+# ╔═╡ 497528d9-69be-471d-ae7b-724bc837578b
+using Pkg;Pkg.add(path = "c:/Users/4vektor/.julia/dev/SSpline")
 
-# ╔═╡ accd501b-c865-485b-9c8c-4d7b074b22a3
-using PlutoUI
+# ╔═╡ 93b6da1b-bb09-4e34-8da5-9cec483d3966
+Pkg.add(path = "c:/Users/4vektor/.julia/dev/SpectralVis")
+
+# ╔═╡ d243ccbd-aa57-4a5d-9757-35e52139c794
+Pkg.add(["PlutoUI", "Colors", "Plots", "GLMakie"])
+
+# ╔═╡ 9aaa9551-7a94-4983-81c3-bb1662a3804c
+#=╠═╡
+RGB(50,20,30)
+  ╠═╡ =#
 
 # ╔═╡ 201148e9-e528-435e-afc8-9e4390e2729d
+#=╠═╡
 #plotlyjs()
 plotly()
+  ╠═╡ =#
 
 # ╔═╡ 22394b49-4e75-444e-b19f-1bfc637dbe98
 md"Cell width:"
@@ -137,11 +148,12 @@ end
 md"Source CCT: $stemp K / $cels °C"
 
 # ╔═╡ 261ebe67-9f43-455e-ab37-51f254d26e67
+#=╠═╡
 begin
 	xcoord=zeros(24)
 	ycoord=zeros(24)
 
-	plot(xrange=(0.2,6.8),yrange=(-0.4,3.6),background=Lab(30,0,0),foreground=Lab(26,0,0),ticks=false,legend=false,size=(820,560))
+	plot(xrange=(0.2,6.8),yrange=(-0.4,3.6),background=Colors.Lab(30,0,0),foreground=Lab(26,0,0),ticks=false,legend=false,size=(820,560))
 	for i=1:24
 		row,col=divrem(i-1,6).+(1,1)
     	xcoord[i]=col
@@ -150,6 +162,7 @@ begin
 	scatter!(xcoord,ycoord,color=groundtruth_patches,markersize=52,markerstrokewidth=0,markershape= :circle, aspect_ratio=:equal)
 	scatter!(xcoord,ycoord,color=dest_patches,markersize=30,markerstrokewidth=0,markershape= :circle, aspect_ratio=:equal)
 end
+  ╠═╡ =#
 
 # ╔═╡ fa59297b-e992-4285-8295-b5c8273d8a9d
 md"Patch Array initialization"
@@ -195,6 +208,7 @@ end
 [sWP,dWP,sourcecolor,destcolor,groundtruth]
 
 # ╔═╡ 4c35d989-97fe-47cf-8db2-1218e4055072
+#=╠═╡
 begin
 	gt = convert(DIN99o,groundtruth)
 	sc = convert(DIN99o,sourcecolor)
@@ -206,20 +220,26 @@ begin
 	scatter!([dc.a],[dc.b], color = destcolor,markersize=8, shape = :circle, label="destination color")
 	quiver!([sc.a],[sc.b],quiver=([dc.a-sc.a],[dc.b-sc.b]),arrowsize=1,marker=:none,color=:black)
 end
+  ╠═╡ =#
 
 # ╔═╡ df224fbf-e32f-47b0-824b-3ada60992734
+#=╠═╡
 begin
 	ΔE = sqrt((gt.a - dc.a)^2 + (gt.b - dc.b)^2)
 	nothing
 end
+  ╠═╡ =#
 
 # ╔═╡ 91454a50-f4ab-48b8-b9b0-51d0c73fab3b
+#=╠═╡
 md"ΔE $(string(typeof(gt))[12:end-9]) = $ΔE"
+  ╠═╡ =#
 
 # ╔═╡ 28f92850-856b-4539-8ef8-111b3ca06313
 md"Spectrum of color patch and light source:"
 
 # ╔═╡ 0855f0cc-2e79-4916-a785-87c45aef0f4f
+#=╠═╡
 begin
 	#scatter(mbf.λ,mbf.r,label="original")
 	plot(colorpatch.λ,colorpatch.r, ylimits = (0.0,1.5), color=groundtruth, linewidth = 2,label="Color Checker $patch",background=DIN99o(100-gt.l,0,0),legend=:outertopright)
@@ -227,13 +247,29 @@ begin
 	plot!(source.λ,source.l,color=sWP,linewidth = 4,label="light source $sourcetemp K")
 	#scatter!(source.λ,source.l,color=sWP,markersize = 1, label=false)
 end
+  ╠═╡ =#
 
 # ╔═╡ 25ddb7d2-584b-4fcc-bae4-2cdf68878751
 source
 
+# ╔═╡ 37080ff2-a3b7-11eb-3634-af524d492479
+# ╠═╡ disabled = true
+#=╠═╡
+using Plots
+  ╠═╡ =#
+
+# ╔═╡ accd501b-c865-485b-9c8c-4d7b074b22a3
+#=╠═╡
+using PlutoUI, SpectralVis, SSpline, Colors, Plots
+  ╠═╡ =#
+
 # ╔═╡ Cell order:
 # ╠═37080ff2-a3b7-11eb-3634-af524d492479
+# ╠═497528d9-69be-471d-ae7b-724bc837578b
+# ╠═93b6da1b-bb09-4e34-8da5-9cec483d3966
+# ╠═d243ccbd-aa57-4a5d-9757-35e52139c794
 # ╠═accd501b-c865-485b-9c8c-4d7b074b22a3
+# ╠═9aaa9551-7a94-4983-81c3-bb1662a3804c
 # ╠═201148e9-e528-435e-afc8-9e4390e2729d
 # ╟─22394b49-4e75-444e-b19f-1bfc637dbe98
 # ╠═e62085f0-b38a-43cc-a277-0504da926958
@@ -245,9 +281,9 @@ source
 # ╟─455c4526-1dd0-461d-a40d-d4c9be7b9c2c
 # ╟─c71b58d4-a969-4153-ade5-3ee27044b482
 # ╟─d96a11d2-6321-4b88-9798-9809533a734f
-# ╟─e94743af-b474-4801-ac3e-53703c4ab56b
+# ╠═e94743af-b474-4801-ac3e-53703c4ab56b
 # ╟─07df29f9-b7aa-4877-bda6-8e6c32c6d891
-# ╟─ad9c6ea9-f6c3-415e-bc65-ca817809db8b
+# ╠═ad9c6ea9-f6c3-415e-bc65-ca817809db8b
 # ╟─27c3f7c1-afc6-4095-86a2-85c4651ab75d
 # ╟─f9c57d5c-b947-445f-b479-91515cd473b8
 # ╟─d128b785-6a9b-48c0-973a-4acfd24fa97c

@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.18.0
+# v0.19.0
 
 using Markdown
 using InteractiveUtils
@@ -14,8 +14,11 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ d12d8d6d-e360-4e71-b7eb-0c08f208c472
-import Pkg; Pkg.add(url="https://github.com/m-lohmann/SpectralVis.jl")
+# ╔═╡ ec1ac6cc-fa4f-424b-87af-cd4bc6a50b8f
+import Pkg;Pkg.add(path="c:/users/4vektor/.julia/dev/SpectralVis")
+
+# ╔═╡ 7cec7fd7-ab69-4b1e-9c0b-7fdcf0c7ed15
+using Revise
 
 # ╔═╡ 688ea582-aed8-11eb-1da6-5f19687aaac8
 using Plots, SpectralVis, PlutoUI, Colors
@@ -27,7 +30,7 @@ html"""<style> main {max-width: 950px;}"""
 gr()
 
 # ╔═╡ 17bbdfe4-b5bd-4e40-88b6-163b10873b5f
-env = SPECENV
+env = set_specenv()
 
 # ╔═╡ d5909d18-85ad-4caa-9ea5-fce116ecca09
 md"Wratten filter number"
@@ -50,14 +53,17 @@ md"Use metameric black from $MB:"
 # ╔═╡ f1d48cce-a989-429b-9ec0-f3406dddf9bc
 md"Factor for metameric black: $FACT"
 
+# ╔═╡ 59645b9d-80be-46b0-b631-03f74a41526b
+wratten_filter(1,1.0,set_specenv())
+
 # ╔═╡ a8b2389f-45f0-4080-a00a-5491f36d3c16
 begin
 	T = 6504 # D65 CCT
 	#illum = normalize_spec(D_series_illuminant(T),1.0)
 	illum = normalize_spec(blackbody_illuminant(SPECENV,T),1.0)
 	#illum = LSpec(collect(390:830),ones(830-389))
-	wrat10 = wratten_filter(FILT,1.0)
-	wrat20 = wratten_filter(MB, 1.0)
+	wrat10 = wratten_filter(FILT)
+	wrat20 = wratten_filter(MB)
 	
 	wc = tristimulus(illum, wrat10)./100
 	wb = tristimulus(illum, wrat20)./100
@@ -93,8 +99,9 @@ illum * wrat20 * wrat20
 
 # ╔═╡ Cell order:
 # ╠═2f81fae3-ab8f-4be3-b023-1ed12e393592
-# ╠═d12d8d6d-e360-4e71-b7eb-0c08f208c472
+# ╠═ec1ac6cc-fa4f-424b-87af-cd4bc6a50b8f
 # ╠═688ea582-aed8-11eb-1da6-5f19687aaac8
+# ╠═7cec7fd7-ab69-4b1e-9c0b-7fdcf0c7ed15
 # ╠═7fe6b71d-f7ee-4cab-b83a-5c198f1be670
 # ╠═17bbdfe4-b5bd-4e40-88b6-163b10873b5f
 # ╟─d5909d18-85ad-4caa-9ea5-fce116ecca09
@@ -105,5 +112,6 @@ illum * wrat20 * wrat20
 # ╟─f1d48cce-a989-429b-9ec0-f3406dddf9bc
 # ╟─1f39485f-fc8e-4d8a-9178-0bca54f8bbf1
 # ╟─465b2e9b-d551-4413-a803-7e5b8358b13d
+# ╠═59645b9d-80be-46b0-b631-03f74a41526b
 # ╠═a8b2389f-45f0-4080-a00a-5491f36d3c16
 # ╠═d3275197-f1bb-4427-98b1-c2fd9ccaa267

@@ -1,13 +1,13 @@
 function pancam(filter::Symbol)
-   filter == :L2 ? TSpec(PancamL2[:,1],PancamL2[:,2]) :
-   filter == :L3 ? TSpec(PancamL3[:,1],PancamL3[:,2]) :
-   filter == :L4 ? TSpec(PancamL4[:,1],PancamL4[:,2]) :
-   filter == :L5 ? TSpec(PancamL5[:,1],PancamL5[:,2]) :
-   filter == :L6 ? TSpec(PancamL6[:,1],PancamL6[:,2]) :
-   filter == :L7 ? TSpec(PancamL7[:,1],PancamL7[:,2]) : nothing
+   filter == :L2 ? TSpec(pancamL2[:,1],pancamL2[:,2],1.0) :
+   filter == :L3 ? TSpec(pancamL3[:,1],pancamL3[:,2],1.0) :
+   filter == :L4 ? TSpec(pancamL4[:,1],pancamL4[:,2],1.0) :
+   filter == :L5 ? TSpec(pancamL5[:,1],pancamL5[:,2],1.0) :
+   filter == :L6 ? TSpec(pancamL6[:,1],pancamL6[:,2],1.0) :
+   filter == :L7 ? TSpec(pancamL7[:,1],pancamL7[:,2],1.0) : nothing
 end
 
-const PancamL2 =
+const pancamL2 =
    [729.893842887474	   0.0;
     735.83864118896 	   0.0402542372881356;
     739.235668789809	   0.120762711864407;
@@ -35,7 +35,7 @@ const PancamL2 =
     776.602972399151	   0.0105932203389831;
     780.0           	   0.0]
 
-const PancamL3 =
+const pancamL3 =
    [653.460721868365	   0.0;
     656.433121019108	   0.0211864406779661;
     658.980891719745	   0.0741525423728814;
@@ -62,7 +62,7 @@ const PancamL3 =
     691.677282377919	   0.0148305084745763;
     695.074309978769	   0.0]
 
-const PancamL4 =
+const pancamL4 =
    [580.000000000000    0.0;
     584.670912951168    0.0105932203389831;
     588.067940552017    0.0444915254237288;
@@ -91,7 +91,7 @@ const PancamL4 =
     625.010615711253    0.00635593220338983;
     630.106157112527    0.0]
 
-const PancamL5 =
+const pancamL5 =
    [518.004246284501	   0.0;
     520.127388535032	   0.010593220339;
     521.40127388535	   0.025423728814;
@@ -122,7 +122,7 @@ const PancamL5 =
     552.823779193206	   0.006355932203;
     560.042462845011	   0.0]
 
-const PancamL6 =
+const pancamL6 =
    [450.063694267516	   0.0;
     455.15923566879	   0.004237288136;
     458.556263269639	   0.014830508475;
@@ -165,7 +165,7 @@ const PancamL6 =
     515.031847133758	   0.002118644068;
     524.7983014862	   0.0]
 
-const PancamL7 =
+const pancamL7 =
    [380.0     	         0.0
     387.643312101911	   0.023305084746
     392.314225053079	   0.046610169492
@@ -196,3 +196,4 @@ const PancamL7 =
     471.295116772824	   0.012711864407
     473.842887473461	   0.004237288136
     479.787685774947	   0.0]
+

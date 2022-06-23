@@ -8,7 +8,7 @@
     Color matching data were obtained by the following observers:
 
     DLM: David L. MacAdam (after Brown & MacAdam)
-    PGN: P.G. Nutting Jr.
+    PGN: P. G. Nutting Jr.
     WRB: W. R. J. Brown (after Brown & MacAdam)
     GW: 42 years old observer
     AR: 27 years old observer

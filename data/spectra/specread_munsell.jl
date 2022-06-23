@@ -1,10 +1,10 @@
 """
-`munsell_specs()`
+`munsell_matt_specs()`
 
-Returns an array containing all 1269 munsell spectra, measured from 380 to 800 nm in 1 nm steps.
+Returns an array containing all 1269 munsell matt spectra, measured from 380 to 800 nm in 1 nm steps.
 """
-function munsell_specs()
-    filename = "munsell.dat"
+function munsell_matt_specs()
+    filename = "munsell_matt.dat"
     fp=@__DIR__
     cd(fp)
     cd("..\\spectra")

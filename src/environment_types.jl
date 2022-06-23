@@ -40,7 +40,7 @@ function set_specenv(λmin = 390.0, Δλ = 1.0, λmax = 830.0, cmf = cmfunc(:cie
 end
 
 # Set spectral environment to default settings
-SPECENV=set_specenv()
+global SPECENV=set_specenv()
 
 """
 `set_extrap(env::SpecEnvironment,extrapolation::Symbol)`

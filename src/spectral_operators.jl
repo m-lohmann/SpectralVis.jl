@@ -4,9 +4,9 @@
 # Operators for spectral and color calculations
 # For spectral calculations operations are based on the physically plausible order, like
 #
-# light source > reflectance (light bounced off a surface)
-# light source > transmission (filtered light)
-# transmission > transmission (combination of two filters)
+# light source → reflectance (light bounced off a surface)
+# light source → transmission (filtered light)
+# transmission → transmission (combination of two filters)
 
 
 ############
@@ -164,7 +164,7 @@ end
 # 
 # conversion from spectra to XYZ
 """
-    ×(l::LSpec, r::RSpec, cmf::CMatch)
+    *(l::LSpec, r::RSpec, cmf::CMatch)
 
 Returns `XYZ` color of an illuminant spectrum reflected off a surface.
 
@@ -173,15 +173,22 @@ Returns `XYZ` color of an illuminant spectrum reflected off a surface.
 ```jldoctest
 ```
 """
-function ×(l::LSpec, r::RSpec, cmf::CMatch)
+function *(l::LSpec, r::RSpec, cmf::CMatch)
     wm= (l.l .* cmf.y)
     refl = l.l .* r.r
     Colors.XYZ(sum(refl .* cmf.x)/sum(wm), sum(refl .* cmf.y)/sum(wm), sum(refl .* cmf.z)/sum(wm))
 end
 
+function ×(l::LSpec, w::LSpec, cmf::CMatch)
+    wm= (l.l .* cmf.y)
+    refl = l.l .* w.l
+    Colors.XYZ(sum(refl .* cmf.x)/sum(wm), sum(refl .* cmf.y)/sum(wm), sum(refl .* cmf.z)/sum(wm))
+end
+
+
 
 """
-    ×(l::LSpec, t::TSpec, cmf::CMatch)
+    *(l::LSpec, t::TSpec, cmf::CMatch)
 
 Returns the `XYZ` color of an illuminant transmitted through a filter.
 
@@ -190,7 +197,7 @@ Returns the `XYZ` color of an illuminant transmitted through a filter.
 ```jldoctest
 ```
 """
-function ×(l::LSpec, t::TSpec, cmf::CMatch)
+function *(l::LSpec, t::TSpec, cmf::CMatch)
     wm= (l.l .* cmf.y)
     refl = l.l .* t.t
     Colors.XYZ(sum(refl .* cmf.x) / sum(wm), sum(refl .* cmf.y) / sum(wm), sum(refl .* cmf.z) / sum(wm))

@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.14.7
+# v0.19.4
 
 using Markdown
 using InteractiveUtils
@@ -7,14 +7,40 @@ using InteractiveUtils
 # This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
 macro bind(def, element)
     quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
         local el = $(esc(element))
-        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : missing
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
         el
     end
 end
 
+# ╔═╡ d2abcb88-551d-408e-a91c-df75bab86b1d
+import Pkg
+
+# ╔═╡ 42365ff1-b3c1-4274-9ab3-4cecab55f14b
+Pkg.add("PlutoUI")
+
+# ╔═╡ e6ec51dc-4ac7-4ab5-96ce-a40c6c78fbf4
+Pkg.add(path = "c:/Users/4vektor/.julia/dev/SSPline")
+
+
+# ╔═╡ 8365b3e1-fd95-45cd-81b7-3a9aa2155296
+Pkg.add(path = "c:/Users/4vektor/.julia/dev/SpectralVis")
+
+# ╔═╡ f8c56346-91d2-4996-927e-c43828d1adb3
+Pkg.add("GLMakie")
+
 # ╔═╡ 37080ff2-a3b7-11eb-3634-af524d492479
-using PluoUI, Plots, SSpline, SpectralVis
+using PlutoUI
+
+# ╔═╡ 1fc56f02-306a-459c-a120-e5a5d3639ea0
+using GLMakie
+
+# ╔═╡ b72d8d6b-4a7e-4cd0-a0af-5ac8e51aa993
+using SSpline
+
+# ╔═╡ d2f759bf-2f78-403f-989e-a35b2e2c7a84
+using SpectralVis
 
 # ╔═╡ 201148e9-e528-435e-afc8-9e4390e2729d
 #plotlyjs()
@@ -25,7 +51,7 @@ pyplot()
 md"Cell width:"
 
 # ╔═╡ e62085f0-b38a-43cc-a277-0504da926958
-html"""<style>main {max-width: 800px;}</style>"""
+html"""<style>main {max-width: 950px;}</style>"""
 
 
 # ╔═╡ 9e05057a-216a-44eb-95cc-b15b46fc2d3d
@@ -34,7 +60,7 @@ md"Color matching function defined in the spectral environment SPECENV:"
 # ╔═╡ 54e4792f-0294-4c58-931b-4c3a5ac624ed
 begin
 	#SPECENV.cmf= cmf(:cie12_2)
-	SPECENV.cmf = cmf(shift_colormatch(conefund(:cie12_10),:l,0))
+	#SPECENV.cmf = cmf(shift_colormatch(conefund(:cie12_10),:l,0))
 	cmfunc = SPECENV.cmf
 	env = SPECENV
 end
@@ -85,19 +111,19 @@ md"Color Adaptation Transform, source illuminant, chart type"
 # ╔═╡ 67483e9c-984f-40a1-a68d-71e819ba92d4
 begin
 	if specsource == "d"
-		selection = Select(["4000" => "D40", "5000" => "D50", "5500" => "D55", "6500" => "D65", "7500" => "D75", "9300" => "D93", "10000" => "D100", "15000" => "D150", "17500" => "D175", "20000" => "D200", "22500" => "D225", "25000" => "D250"], default = "4000")
+		selection = PlutoUI.Select(["4000" => "D40", "5000" => "D50", "5500" => "D55", "6500" => "D65", "7500" => "D75", "9300" => "D93", "10000" => "D100", "15000" => "D150", "17500" => "D175", "20000" => "D200", "22500" => "D225", "25000" => "D250"], default = "4000")
 	elseif specsource == "bb"
-		selection = Select(["800" => "800 K", "900" => "900 K", "1000" => "1000 K", "1250" => "1250 K","1500" => "1500 K", "2856" => "2856 K (Ill. A, tungsten filament)", "4000" => "4000 K", "5000" => "5000 K", "5500" => "5500 K", "6500" => "6500 K", "7500" => "7500 K", "9300" => "9300 K", "10000" => "10,000 K", "15000" => "15,000 K", "17500" => "17,500 K", "20000" => "20,000 K", "22500" => "22,500 K", "25000" => "25,000 K", "50000" => "50,000 K", "75000" => "75,000 K", "100000" => "100,000 K"], default = "5000")
+		selection = PlutoUI.Select(["800" => "800 K", "900" => "900 K", "1000" => "1000 K", "1250" => "1250 K","1500" => "1500 K", "2856" => "2856 K (Ill. A, tungsten filament)", "4000" => "4000 K", "5000" => "5000 K", "5500" => "5500 K", "6500" => "6500 K", "7500" => "7500 K", "9300" => "9300 K", "10000" => "10,000 K", "15000" => "15,000 K", "17500" => "17,500 K", "20000" => "20,000 K", "22500" => "22,500 K", "25000" => "25,000 K", "50000" => "50,000 K", "75000" => "75,000 K", "100000" => "100,000 K"], default = "5000")
 	elseif specsource == "a"
-		selection = Select(["2856" => "2856 K"], default = "2856")
+		selection = PlutoUI.Select(["2856" => "2856 K"], default = "2856")
 	elseif specsource == "b"
-		selection = Select(["4874" => "4874 K"], default = "4874")
+		selection = PlutoUI.Select(["4874" => "4874 K"], default = "4874")
 	elseif specsource == "c"
-		selection = Select(["6774" => "6774 K"], default = "6774")
+		selection = PlutoUI.Select(["6774" => "6774 K"], default = "6774")
 	elseif specsource == "f"
-		selection = Slider(1:12; default = 2, show_value = true)
+		selection = PlutoUI.Slider(1:12; default = 2, show_value = true)
 	elseif specsource == "gd"
-		selection = Slider(1:7; default = 1, show_value = true)
+		selection = PlutoUI.Slider(1:7; default = 1, show_value = true)
 	end
 	nothing
 end
@@ -152,10 +178,10 @@ end
 md"Source CCT: $stemp K / $cels °C"
 
 # ╔═╡ 12ec8fb8-47f4-498a-9df3-6616b6db87a0
-@bind chartselect Slider(1:3)
+@bind chartselect PlutoUI.Slider(1:3)
 
 # ╔═╡ fd90db92-cd97-4157-bb02-70512f7f2ff4
-charttype = Symbol("Macbeth_chart"*string(chartselect))
+charttype = PlutoUI.Symbol("Macbeth_chart"*string(chartselect))
 
 # ╔═╡ e94743af-b474-4801-ac3e-53703c4ab56b
 begin
@@ -182,14 +208,15 @@ begin
 	ycoord=zeros(24)
 	for i=1:24
 		row,col=divrem(i-1,6).+(1,1)
-    	xcoord[i]=col
+		xcoord[i]=col
 		ycoord[i]=4.1-row
 	end
 	layout = (1,2)
 	
-	gtru = scatter(xcoord,ycoord,color=groundtruth_patches,markersize=40,markerstrokewidth=0,markershape= :circle, aspect_ratio=:equal)
-	adap = scatter!(xcoord,ycoord,color=dest_patches,markersize=24,markerstrokewidth=0,markershape= :circle, aspect_ratio=:equal)
-	plot(adap, xrange=(0.2,6.8),yrange=(-0.4,3.6),background=Lab(25,0,0),foreground=Lab(25,0,0),ticks=false,legend=false,size=(820*0.8,560*0.8))
+	#gtru = #GLMakie.Scatter(xcoord,ycoord,color=groundtruth_patches,markersize=40,markerstrokewidth=0,markershape= :circle, aspect_ratio=:equal)
+	GLMakie.scatterlines(xcoord,ycoord, color = groundtruth_patches)
+	adap = GLMakie.scatter!(xcoord,ycoord,color=dest_patches,markersize=24,markerstrokewidth=0,markershape= :circle, aspect_ratio=:equal)
+	#GLMakie.plot(adap, xrange=(0.2,6.8),yrange=(-0.4,3.6),background=Lab(25,0,0),foreground=Lab(25,0,0),ticks=false,legend=false,size=(820*0.8,560*0.8))
 end
 
 # ╔═╡ 28f92850-856b-4539-8ef8-111b3ca06313
@@ -203,9 +230,9 @@ md"Color shift from pre-adaptation to adaptation with applied CAT vs. ground tru
 
 # ╔═╡ 5e8c03cc-c67a-445e-b775-b339b0beba03
 md"""
-Source WP | destination WP | source color | destin. color | ground truth color:
-
-relat. to D65 | D65 whitepoint | relat. to D65 | relat. to D65"""
+|Src. WP | dest. WP | src. color | dest. color | ground truth color|
+|:---|:---:|:---:|:---:|:---:|
+rel. to D65 | D65 WP | rel. to D65 | rel. to D65"""
 
 # ╔═╡ 57ac1b78-5d10-4ff4-b30b-430cc111f925
 md"Patch color:"
@@ -236,27 +263,29 @@ begin
 end
 
 # ╔═╡ 0e8135ab-8592-4e9a-b0db-41b83c5fccaf
-[sWP,dWP,sourcecolor,destcolor,groundtruth]
+md"""
+________________________$[sWP,dWP,sourcecolor,destcolor,groundtruth]
+"""
 
 # ╔═╡ 4c35d989-97fe-47cf-8db2-1218e4055072
 begin
 	gt = convert(DIN99o,groundtruth)
 	sc = convert(DIN99o,sourcecolor)
 	dc = convert(DIN99o,destcolor)
-	plot(legend = :outertopright, ratio = 1.0, xaxis="a*99",yaxis="b*99", title="Color coordinates in DIN99o color space", size = (800,450))
+	#GLMakie.scatterlines([0],[0],legend = :outertopright, ratio = 1.0, xaxis="a*99",yaxis="b*99", title="Color coordinates in DIN99o color space", size = (800,450))
 	#scatter(zeros(10),zeros(10), color=Lab(50,0,0),markersize=2, shape = :hexagon,  label="neutral axis",legend=:outertopleft, aspect_ratio= :equal,background=Lab(20,0,0))
-	scatter!([sc.a],[sc.b], color = sourcecolor,markersize=9, shape = :diamond, label="source color")
-	scatter!([gt.a],[gt.b], color=groundtruth,markersize=10, markershape = :hexagon, label="ground truth")
-	scatter!([dc.a],[dc.b], color = destcolor,markersize=8, shape = :circle, label="destination color")
-	quiver!([sc.a],[sc.b],quiver=([dc.a-sc.a],[dc.b-sc.b]),arrowsize=1,marker=:none,color=:black)
+	GLMakie.scatter!([sc.a],[sc.b], color = sourcecolor,markersize=9, shape = :diamond, label="source color")
+	GLMakie.scatter!([gt.a],[gt.b], color=groundtruth,markersize=10, markershape = :hexagon, label="ground truth")
+	GLMakie.scatter!([dc.a],[dc.b], color = destcolor,markersize=8, shape = :circle, label="destination color")
+	GLMakie.quiver!([sc.a],[sc.b],quiver=([dc.a-sc.a],[dc.b-sc.b]),arrowsize=1,marker=:none,color=:black)
 end
 
 # ╔═╡ 0855f0cc-2e79-4916-a785-87c45aef0f4f
 begin
 	#scatter(mbf.λ,mbf.r,label="original")
 	#scatter!(colorpatch.λ,colorpatch.r,color=groundtruth,markersize=1, label=false)
-	plot(source.λ,source.l,color=sWP,linewidth = 4,label="light source $sourcetemp K")
-	plot!(groundtruth_specs[index].λ,groundtruth_specs[index].r, size = (700, 350),ylimits = (-0.1,1.5), color=groundtruth, linewidth = 2,label="Color Checker $patch",foreground = DIN99o(100.0,0,0), background=DIN99o(100-gt.l,0,0),legend=:outertopright)
+	GLMakie.plot(source.λ,source.l,color=sWP,linewidth = 4,label="light source $sourcetemp K")
+	GLMakie.plot!(groundtruth_specs[index].λ,groundtruth_specs[index].r, size = (700, 350),ylimits = (-0.1,1.5), color=groundtruth, linewidth = 2,label="Color Checker $patch",foreground = DIN99o(100.0,0,0), background=DIN99o(100-gt.l,0,0),legend=:outertopright)
 	#scatter!(source.λ,source.l,color=sWP,markersize = 1, label=false)
 end
 
@@ -306,7 +335,15 @@ begin
 end
 
 # ╔═╡ Cell order:
+# ╠═d2abcb88-551d-408e-a91c-df75bab86b1d
+# ╠═42365ff1-b3c1-4274-9ab3-4cecab55f14b
+# ╠═e6ec51dc-4ac7-4ab5-96ce-a40c6c78fbf4
+# ╠═8365b3e1-fd95-45cd-81b7-3a9aa2155296
+# ╠═f8c56346-91d2-4996-927e-c43828d1adb3
 # ╠═37080ff2-a3b7-11eb-3634-af524d492479
+# ╠═1fc56f02-306a-459c-a120-e5a5d3639ea0
+# ╠═b72d8d6b-4a7e-4cd0-a0af-5ac8e51aa993
+# ╠═d2f759bf-2f78-403f-989e-a35b2e2c7a84
 # ╠═201148e9-e528-435e-afc8-9e4390e2729d
 # ╟─22394b49-4e75-444e-b19f-1bfc637dbe98
 # ╠═e62085f0-b38a-43cc-a277-0504da926958
@@ -336,7 +373,7 @@ end
 # ╟─12ec8fb8-47f4-498a-9df3-6616b6db87a0
 # ╟─261ebe67-9f43-455e-ab37-51f254d26e67
 # ╟─28f92850-856b-4539-8ef8-111b3ca06313
-# ╟─0855f0cc-2e79-4916-a785-87c45aef0f4f
+# ╠═0855f0cc-2e79-4916-a785-87c45aef0f4f
 # ╟─fa59297b-e992-4285-8295-b5c8273d8a9d
 # ╟─c3370bb8-b574-4c82-a1a2-5cbe04e3da29
 # ╟─5e8c03cc-c67a-445e-b775-b339b0beba03
@@ -346,7 +383,7 @@ end
 # ╟─6eafc330-c225-4f26-8a17-561467a8be13
 # ╟─4d5584ab-2ed2-4831-8b5e-9c766a59c4a5
 # ╟─df224fbf-e32f-47b0-824b-3ada60992734
-# ╟─4c35d989-97fe-47cf-8db2-1218e4055072
+# ╠═4c35d989-97fe-47cf-8db2-1218e4055072
 # ╠═1202e1dd-d20d-404b-827f-1369ba3a3532
 # ╠═6803db44-a750-4107-b7c9-009f1dfb2876
 # ╠═cbdab8d1-d782-4b69-987c-0661c94180db

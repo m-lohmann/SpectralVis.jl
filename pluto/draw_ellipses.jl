@@ -1,11 +1,18 @@
 ### A Pluto.jl notebook ###
-# v0.14.7
+# v0.19.5
 
 using Markdown
 using InteractiveUtils
 
+# ╔═╡ 119df1b5-0503-4d27-b074-ac4ee7ae3b14
+begin
+using Pkg
+Pkg.add(path="c:\\Users\\4vektor\\.julia\\dev\\SpectralVis\\")
+	using SpectralVis
+end
+
 # ╔═╡ e61b7190-bb53-11eb-0fc2-c5fb8589c6ab
-using Plots, SpectralVis
+using Plots
 
 # ╔═╡ 28b64763-ae5c-434a-b4fb-2aa91da6a2d7
 html"""<style> main {max-width: 950px;}"""
@@ -25,6 +32,9 @@ Available ellipse datasets:
 * AR_ellipses, two hexagonal fields of **3°** each (12 cd/m²) on white surround: (6 cd/m², 40°), 27 years old
 * GW_ellipses, two hexagonal fields of **3°** each (12 cd/m²) on white surround: (6 cd/m², 40°), 42 years old
 """
+
+# ╔═╡ 4a60320a-4f48-4d6d-8549-ee5014c424a6
+draw_ellipses()
 
 # ╔═╡ 721827c8-f47e-485d-9d36-c06e861ba8ea
 begin
@@ -82,12 +92,14 @@ end
 gw
 
 # ╔═╡ 861a38c3-92f6-4b3a-9a19-eca15e5d7018
-savefig("Color Matching Ellipses from various datasets, 3 times enlarged")
+#savefig("Color Matching Ellipses from various datasets, 3 times enlarged")
 
 # ╔═╡ Cell order:
 # ╠═e61b7190-bb53-11eb-0fc2-c5fb8589c6ab
+# ╠═119df1b5-0503-4d27-b074-ac4ee7ae3b14
 # ╠═28b64763-ae5c-434a-b4fb-2aa91da6a2d7
 # ╟─d8844676-d76d-418d-8311-f9c6409eaa14
+# ╠═4a60320a-4f48-4d6d-8549-ee5014c424a6
 # ╠═721827c8-f47e-485d-9d36-c06e861ba8ea
 # ╠═5a223002-a072-45da-9a6a-ad4fdcc8aefb
 # ╠═861a38c3-92f6-4b3a-9a19-eca15e5d7018

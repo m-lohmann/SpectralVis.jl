@@ -1,14 +1,22 @@
 ### A Pluto.jl notebook ###
-# v0.14.2
+# v0.19.0
 
 using Markdown
 using InteractiveUtils
 
 # ╔═╡ 44c12b60-97e4-11eb-23f7-eb2bf0847809
-using Plots, SSpline, SpectralVis
+begin
+	using Pkg
+	using Plots
+	using GLMakie
+	Pkg.add(path = "c:/users/4vektor/.julia/dev/SSpline")
+	Pkg.add(path = "c:/users/4vektor/.julia/dev/SpectralVis")
+	using SSpline
+	using SpectralVis
+end
 
 # ╔═╡ d5fbb184-9eee-41db-8180-1cf5c5b42db7
-plotlyjs()
+#Pkg.add(PlotlyJS);plotlyjs()
 
 # ╔═╡ 26ffc9f9-e1ec-4187-9eb6-4b0c3fc04223
 begin
@@ -27,8 +35,8 @@ marssky= interp(marsspline,380:1:830)
 
 # ╔═╡ bc9a854d-4fc5-47da-8f09-1e21afe70522
 begin
-	scatter(marsspec.λ,marsspec.l,markersize=3,yrange=0.0:1.0)
-	plot!(marssky[1],marssky[2])
+	GLMakie.scatterlines(marsspec.λ,marsspec.l,markersize=6,#=yrange=0.0:1.0=#)
+	#GLMakie.lines(marssky[1],marssky[2])
 end
 
 # ╔═╡ ae0407ff-283a-4bf8-81ea-f0ac027aab8f
@@ -41,9 +49,9 @@ end
 begin
 	two=ms*mr
 	three=ms*mr*mr*mr*mr*mr*mr*mr*mr
-	plot(ms.λ,ms.l)
-	plot!(two.λ,two.l)
-	plot!(three.λ,three.l)
+	GLMakie.plot(ms.λ,ms.l)
+	GLMakie.plot!(two.λ,two.l)
+	GLMakie.plot!(three.λ,three.l)
 end
 
 # ╔═╡ 208ed350-6c4e-40b2-9b3a-0a821b18a778
@@ -61,10 +69,10 @@ end
 
 # ╔═╡ b1299c43-c5a7-434e-8543-1715e23dc33f
 begin
-	scatter(x,y,color=:black,markersize=3,label="points")
-	plot!(linint[1],linint[2],color=:grey,style=:dash,label="linear")
-	plot!(cubint[1],cubint[2],color=:cyan,label="cubic nat.")
-	plot!(extint[1],extint[2],color=:orange,linestyle=:dash,label="lin. extrap.")
+	GLMakie.scatter(x,y,color=:black,markersize=3,label="points")
+	GLMakie.plot!(linint[1],linint[2],color=:grey,style=:dash,label="linear")
+	GLMakie.plot!(cubint[1],cubint[2],color=:cyan,label="cubic nat.")
+	GLMakie.plot!(extint[1],extint[2],color=:orange,linestyle=:dash,label="lin. extrap.")
 end
 
 # ╔═╡ f536734c-b7c0-4589-9be6-f4abea07faa8
