@@ -171,7 +171,7 @@ Returns spectrum of same type, shifted by Δλ
 function shift_spec(spec::Spectrum, Δλ)
     if isa(spec, LSpec)
         return luminance_spec(spec.λ .+ Δλ, spec.l)
-    elseif isa(spec, LSpec)
+    elseif isa(spec, RSpec)
         return reflectance_spec(spec.λ .+ λ, spec.r)
     end
 end
