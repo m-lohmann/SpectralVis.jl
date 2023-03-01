@@ -5,7 +5,7 @@
 #end
 
 """
-`col(type,lum::ILSpec,whitepoint::Color3,colmatch,dl)`
+`col(type,lum::LSpec,whitepoint::Color3,colmatch,dl)`
 
 This function creates the color loci of the theoretically maximum color gamut under a given illuminant.
 
@@ -29,7 +29,7 @@ output: a,b,c (locus vectors in given color space)
 
         u,v,L for Luv
 """
-function col(type,lum::ILSpec,whitepoint::Color3,colmatch,dl)
+function col(type,lum::LSpec,whitepoint::Color3,colmatch,dl)
     u=Vector{Float64}()
     v=Vector{Float64}()
     w=Vector{Float64}()
@@ -42,7 +42,7 @@ function col(type,lum::ILSpec,whitepoint::Color3,colmatch,dl)
     @inbounds for i in 390:830-dl+1
         bs=block_spec(390,830,1.0,i,i+dl-1,1.0,0)*wp
         xyzcol=(bs*cmf(colmatch))/XYZ(1,1/normfact,1).y
-        labcol=convert(type,convert(Colors.Lab,xyzcol,whitepoint))
+        labcol=convert(type,Colors.convert(Colors.Lab,xyzcol,whitepoint))
         push!(locus1,labcol)
     end
     if type == XYZ
@@ -69,7 +69,7 @@ function col(type,lum::ILSpec,whitepoint::Color3,colmatch,dl)
     @inbounds for i in 390:830-dl+1
         bs=block_spec(390,830,1.0,i,i+dl-1,1.0,1)*wp
         xyzcol=(bs*cmf(colmatch))/XYZ(1,1/normfact,1).y
-        labcol=convert(type,convert(Colors.Lab,xyzcol,whitepoint))
+        labcol=convert(type,Colors.convert(Colors.Lab,xyzcol,whitepoint))
         push!(locus2,labcol)
     end
     if type == XYZ
@@ -115,7 +115,7 @@ output: a,b,c (locus vectors in given color space)
 
         a,b,L for Luv, Lab, DIN99, DIN99d, DIN99o
 """
-function colv(type,lum::ILSpec,whitepoint::Color3,colmatch,s) # s = start 
+function colv(type,lum::LSpec,whitepoint::Color3,colmatch,s) # s = start 
     u=Vector{Float64}()
     v=Vector{Float64}()
     w=Vector{Float64}()
@@ -128,14 +128,14 @@ function colv(type,lum::ILSpec,whitepoint::Color3,colmatch,s) # s = start
     @inbounds for h in 0.0:0.05:0.95
         bs=block_spec(390,830,1.0,s,s,h,0)*wp
         xyzcol=(bs*cmf(colmatch))/XYZ(1,1/normfact,1).y
-        labcol=convert(type,convert(Colors.Lab,xyzcol,whitepoint))
+        labcol=convert(type,Colors.convert(Colors.Lab,xyzcol,whitepoint))
         push!(locus1,labcol)
     end
     # normal spectrals
     @inbounds for i in s:830
         bs=block_spec(390,830,1.0,s,i,1.0,0)*wp
         xyzcol=(bs*cmf(colmatch))/XYZ(1,1/normfact,1).y
-        labcol=convert(type,convert(Colors.Lab,xyzcol,whitepoint))
+        labcol=convert(type,Colors.convert(Colors.Lab,xyzcol,whitepoint))
         push!(locus1,labcol)
     end
     if type == XYZ
@@ -168,7 +168,7 @@ function colv(type,lum::ILSpec,whitepoint::Color3,colmatch,s) # s = start
     @inbounds for i in s:830
         bs=block_spec(390,830,1.0,s,i,1.0,1)*wp
         xyzcol=(bs*cmf(colmatch))/XYZ(1,1/normfact,1).y
-        labcol=convert(type,convert(Colors.Lab,xyzcol,whitepoint))
+        labcol=convert(type,Colors.convert(Colors.Lab,xyzcol,whitepoint))
         push!(locus2,labcol)
     end
     if type == XYZ
@@ -200,10 +200,11 @@ function colv(type,lum::ILSpec,whitepoint::Color3,colmatch,s) # s = start
     #scatter!(v,w,u,markersize=0.2,labels=false)
     locus1,locus2
 end
+
 """
-`sl(type,lum::ILSpec,whitepoint,colmatch,s,d,e)`
+`sl(type,lum::LSpec,whitepoint,colmatch,s,d,e)`
 """
-function sl(type,lum::ILSpec,whitepoint,colmatch,s,d,e)
+function sl(type,lum::LSpec,whitepoint,colmatch,s,d,e)
     locuscollect=Vector()
     @inbounds for dl in s:d:e
         l1,l2=colv(type,lum,whitepoint,colmatch,dl)

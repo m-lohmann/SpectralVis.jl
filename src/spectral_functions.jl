@@ -1,48 +1,73 @@
 """
-`i_luminance_spec(λ::Vector{Float64},r::Vector{Float64})`
+    luminance_spec(λ,r)`
 
-irregular luminance spectrum of type `RSpec`
+Luminance spectrum of type `RSpec`
 """
-function i_luminance_spec(λ,l)
-    return ILSpec(λ,l)
+function luminance_spec(λ,l)
+    return LSpec(λ,l)
 end
 
 """
-`i_reflectance_spec(λ::Vector{Float64},r::Vector{Float64})`
+`reflectance_spec(λ,r)`
 
-irregular reflectance spectrum of type `RSpec`
+Reflectance spectrum of type `RSpec`
 """
-function i_reflectance_spec(λ,s)
-    return IRSpec(λ,s)
+function reflectance_spec(λ,r)
+    return RSpec(λ,r)
 end
 
 """
-`i_transmittance_spec(λ,t)`
+    transmittance_spec(λ,t)
 
-Irregular transmittance spectrum at unit thickness.
+Tansmittance spectrum at unit thickness (x = 1.0).
 """
-function i_transmittance_spec(λ,t)
-    return ITSpec(λ,t)
+function transmittance_spec(λ,t)
+    return TSpec(λ,t,1.0)
 end
 
 """
-`i_transmittance_spec(λ,t,x)`
+    transmittance_spec(λ, t, x)
 
-Irregular transmittance spectrum with thickness `x` given relative to unit thickness, according to Bougouer’s Law/Lambert’s Law.
+Transmittance spectrum with thickness `x` given relative to unit thickness, according to Bougouer’s Law/Lambert’s Law.
 
 See: "Color Measurement" by David L. MacAdam, chapter 3.2: "Bouguer’s Law"
 """
-function i_transmittance_spec(λ::Vector{Real},t::Vector{Real},x::Real)
-    return ITSpec(λ, t, x)
+function transmittance_spec(λ::Vector{Real},t::Vector{Real},x::Real)
+    return TSpec(λ, t, x)
 end
 
 """
-`i_transmittance_spec(λ,t,d,d0)`
+    transmittance_spec(λ,t,d,d0)
 
-Irregular transmittance spectrum with thickness term `d`. Unit thickness is `d0`, according to Bouguer’s Law/Lambert’s Law.
+Transmittance spectrum with thickness term `d`. Unit thickness is `d0`, according to Bouguer’s Law/Lambert’s Law.
 
 See: "Color Measurement" by David L. MacAdam, chapter 3.2: "Bougouer’s Law"
 """
-function i_transmittance_spec(λ::Vector{Real},t::Vector{Real},d::Real,d0::Real)
-    i_transmittance_spec(λ,t,(d/d0))
+function transmittance_spec(λ::Vector{Real},t::Vector{Real},d::Real,d0::Real)
+    transmittance_spec(λ,t,(d/d0))
+end
+
+"""
+`reinterpolate(spectrum,λmin,Δλ,λmax,style=:natural)`
+"""
+function reinterpolate(spectrum,λmin,Δλ,λmax,istyle=:natural,estyle=:linear)
+    if typeof(spectrum) == RSpec
+        spl = cubicspline(spectrum.λ,spectrum.r,istyle)
+        epsl = extrap(spl,)
+        extrapolate(spl,xrange,extr::Symbol)
+        l,s = interp(spl,(λmin:Δλ:λmax))
+        return RSpec(l,s)
+    elseif typeof(spectrum) == LSpec
+        spl = cubicspline(spectrum.λ,spectrum.l,istyle)
+        l,s = interp(spl,(λmin:Δλ,λmax))
+        return LSpec(l,s)
+    end
+end
+
+"""
+    adaptated_color(spectrum)
+"""
+function adapted_color(illuminant1,λrange)
+    lum=normalize_spec(blackbody_illuminant(T))
+    wp=blackbody_whitepoint(SPECENV, T)
 end

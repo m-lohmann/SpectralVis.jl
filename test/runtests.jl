@@ -1,6 +1,31 @@
 using SpectralVis
 using Test
 
+@testset "Spectral environment test" begin
+    env = SPECENV
+
+    @test env.λmin == 390.0
+    @test env.Δλ == 1.0
+    @test env.λmax == 830.0
+    @test env.cmf isa cie12_10
+    @test env.ex == :linear
+
+    for i in (:none, :boundary, :linear, :parabolic)
+        set_extrap(env, i)
+        @test env.ex == i
+    end
+
+    @test set_extrap(env, :cubic) == DomainError
+    
+    a, b, c = 400.0, 5.0, 800.0
+
+    set_limits(env, a, b, c)
+    @test env.λmin, env.Δλ, env.λmax == 400.0, 5.0, 800.0
+
+    @test set_colormatch(env, :cie06_2).cmf isa CIE12_2
+    @test set_colormatch(:cie06_10).cmf isa CIE12_10
+end
+
 @testset "Block spectrum generator mode 0 (block_spec) test" begin
     m = 0
     λmin=380.0
@@ -78,8 +103,12 @@ end
     @test maximum(broadcast(abs,(delta10_3))) ≈ 0 atol=eps
 end
 
+
+
 @testset "Spectral operators test" begin
     @test 1==1    
+
+    luminance = D65_illuminant()
 
 
 end
