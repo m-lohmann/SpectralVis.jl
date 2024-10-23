@@ -37,7 +37,7 @@ begin
 	u = zeros(length(vals))
 	v = zeros(length(vals))
 	
-	for k in 1:length(vals)
+	for k in eachindex(vals)
 		t = vals[k]
 		wp = blackbody_whitepoint(SPECENV,t)
 		a,b = cie60(wp)
@@ -56,7 +56,7 @@ begin
 	f = zeros(length(fine))
 	g = zeros(length(fine))
 	
-	for l in 1:length(fine)
+	for l in eachindex(fine)
 		te = fine[l]
 		wpo = blackbody_whitepoint(SPECENV,te)
 		c,d = cie60(wpo)

@@ -215,7 +215,7 @@ TSpec(Real[400.0, 410.0, 420.0, 430.0, 440.0, 450.0, 460.0, 470.0, 480.0, 490.0 
 ```
 """
 function wratten(f::Symbol)
-    @inbounds for i in 1:length(Wrattenfilters)
+    @inbounds for i in eachindex(Wrattenfilters)
         Wrattenfilters[i] == f ? (return wratten(i)) : nothing
     end
     error("Filter $f does not exist")
@@ -232,7 +232,7 @@ Returns `TSpec` of one of the Wratten filters of a given name adapted to `SPECEN
 
 ```
 """
-function wratten_filter(f::Int,x::Real, env = SPECENV)
+function wratten_filter(f::Int,x::Float64, env = SPECENV)
     wr = wratten(f)
     extr = extrap(hermitespline(wr.λ, wr.t.^x, :kruger), collect(env.λmin:env.Δλ:env.λmax),:smooth)
     intr = interp(extr, env.λmin:env.Δλ:env.λmax)
@@ -255,8 +255,8 @@ wratten_filter(f::Int) = wratten_filter(f, 1.0, SPECENV)
 
 returns `TSpec` of one of the Wratten filters of a given name adapted to `SPECENV` settings.
 """
-function wratten_filter(f::Symbol, x::Real)
-    @inbounds for i in 1:length(Wrattenfilters)
+function wratten_filter(f::Symbol, x::Float64)
+    @inbounds for i in eachindex(Wrattenfilters)
         Wrattenfilters[i] == f ? (return wratten_filter(i, x)) : nothing
     end
     error("Filter $f does not exist")

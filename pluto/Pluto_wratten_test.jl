@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.18.0
+# v0.19.46
 
 using Markdown
 using InteractiveUtils
@@ -14,11 +14,14 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ d12d8d6d-e360-4e71-b7eb-0c08f208c472
-import Pkg; Pkg.add(url="https://github.com/m-lohmann/SpectralVis.jl")
+# ╔═╡ b8e33c8a-69e0-4d01-9e62-dd8cca5b1c67
+import Pkg; Pkg.add(path="c:/users/4vektor/.julia/dev/SpectralVis")
 
 # ╔═╡ 688ea582-aed8-11eb-1da6-5f19687aaac8
-using Plots, SpectralVis, PlutoUI, Colors
+using Plots, PlutoUI, Colors
+
+# ╔═╡ 129b1b5b-d5df-4040-ba50-99b6c9259594
+using SpectralVis
 
 # ╔═╡ 2f81fae3-ab8f-4be3-b023-1ed12e393592
 html"""<style> main {max-width: 950px;}"""
@@ -50,26 +53,36 @@ md"Use metameric black from $MB:"
 # ╔═╡ f1d48cce-a989-429b-9ec0-f3406dddf9bc
 md"Factor for metameric black: $FACT"
 
+# ╔═╡ 465b2e9b-d551-4413-a803-7e5b8358b13d
+#XYZ(wc[1],wc[2],wc[3])
+
 # ╔═╡ a8b2389f-45f0-4080-a00a-5491f36d3c16
 begin
 	T = 6504 # D65 CCT
 	#illum = normalize_spec(D_series_illuminant(T),1.0)
 	illum = normalize_spec(blackbody_illuminant(SPECENV,T),1.0)
 	#illum = LSpec(collect(390:830),ones(830-389))
-	wrat10 = wratten_filter(FILT,1.0)
+end
+
+# ╔═╡ aec08ea0-c2f3-401c-ba4f-17b67da5910c
+wrat10 = wratten_filter(FILT,1.0)
+
+# ╔═╡ 7481c624-d828-473f-b2c2-1826ff98472c
+begin
+
 	wrat20 = wratten_filter(MB, 1.0)
-	
+
 	wc = tristimulus(illum, wrat10)./100
 	wb = tristimulus(illum, wrat20)./100
 	
-	plot(ylimits=(-0.1,1.21), size = (900,500),legend=:outertopright, title = "Filter and metameric filter", xaxis = "wavelength [nm]", yaxis = "transmittance")
+	plot(ylimits=(-0.25,1.21), size = (900,300),legend=:outertopright, title = "Filter and metameric filter", xaxis = "wavelength [nm]", yaxis = "transmittance")
 	
 	# fundamental metamer colorization:
 	funda = XYZ(wc[1],wc[2],wc[3])
 	# alternative fund. met. colorization:
 	altblack = XYZ(wb[1],wb[2],wb[3])	
 
-	plot!(wrat10.λ,wrat10.t, color = funda, linewidth = 4.0, label = "wratten filter")
+	#plot!(wrat10.λ,wrat10.t, color = funda, linewidth = 4.0, label = "wratten filter")
 	
 	# fundamental metamer of filter 1
 	meta = fundamental_metamer(illum, wrat10)
@@ -85,16 +98,14 @@ begin
 	plot!(meta.λ,wrat10.t.+mbla.l.*FACT, linewidth = 4.0, color = altblack ,style = :dash, label = "wratten filt. + black * $(round(FACT, digits=1))")
 end
 
-# ╔═╡ 465b2e9b-d551-4413-a803-7e5b8358b13d
-XYZ(wc[1],wc[2],wc[3])
-
 # ╔═╡ d3275197-f1bb-4427-98b1-c2fd9ccaa267
 illum * wrat20 * wrat20
 
 # ╔═╡ Cell order:
 # ╠═2f81fae3-ab8f-4be3-b023-1ed12e393592
-# ╠═d12d8d6d-e360-4e71-b7eb-0c08f208c472
 # ╠═688ea582-aed8-11eb-1da6-5f19687aaac8
+# ╠═b8e33c8a-69e0-4d01-9e62-dd8cca5b1c67
+# ╠═129b1b5b-d5df-4040-ba50-99b6c9259594
 # ╠═7fe6b71d-f7ee-4cab-b83a-5c198f1be670
 # ╠═17bbdfe4-b5bd-4e40-88b6-163b10873b5f
 # ╟─d5909d18-85ad-4caa-9ea5-fce116ecca09
@@ -106,4 +117,6 @@ illum * wrat20 * wrat20
 # ╟─1f39485f-fc8e-4d8a-9178-0bca54f8bbf1
 # ╟─465b2e9b-d551-4413-a803-7e5b8358b13d
 # ╠═a8b2389f-45f0-4080-a00a-5491f36d3c16
+# ╠═aec08ea0-c2f3-401c-ba4f-17b67da5910c
+# ╠═7481c624-d828-473f-b2c2-1826ff98472c
 # ╠═d3275197-f1bb-4427-98b1-c2fd9ccaa267

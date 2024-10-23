@@ -141,18 +141,20 @@ function draw_ellipses(dataset,sizefactor)
     ellcoll
 end
 
-# 3d ellipse
-#  ds^2 = g11(x-x0)^2 + g22(y-y0)^2 + g33(l-l0)^2
-# +2 * g12(x-x0)(y-y0) + 2 * g13(x-x0)(l-l0) + 2 * g23(y-y0)(l-l0)
-# with ds^2 = 7.81, corresponding to χ^2 value for 3 degrees of freedom,
-# ellipsoid contains on average 95% of any random set of color matches
-
 """
 `ellipse(u, v, a, b, theta)`
 
 Create coordinate vectors of an ellipse with center coordinates `u`, `v`, major axis `a`, minor axis `b`, and tilt angle `θ`.
 
 Result: `x::Vector, y::vector`
+
+    
+`3D ellipsoid`
+    ds^2 = g11(x-x0)^2 + g22(y-y0)^2 + g33(l-l0)^2
+      +2 * g12(x-x0)(y-y0) + 2 * g13(x-x0)(l-l0) + 2 * g23(y-y0)(l-l0)
+
+with ds^2 = 7.81, corresponding to χ^2 value for 3 degrees of freedom,
+ellipsoid contains on average 95% of any random set of color matches.
 """
 function ellipse(u, v, a, b, theta)
     n = 40

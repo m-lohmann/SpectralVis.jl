@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.0
+# v0.19.46
 
 using Markdown
 using InteractiveUtils
@@ -16,11 +16,8 @@ using SpectralVis
 # ╔═╡ 474e20d1-fce7-4d63-95b5-511af903b2a9
 using Plots
 
-# ╔═╡ 6f2c7114-2874-4827-b6c6-228bc66e2203
-
-
 # ╔═╡ e8c93954-54f7-4969-824c-34703328737b
-pyplot()
+gr()
 
 # ╔═╡ 8af080d9-c436-4de7-8443-71b8b658e7dd
 function spectralmix(c1, c2)
@@ -84,7 +81,6 @@ dswp
 # ╔═╡ Cell order:
 # ╠═45610e71-3ff7-46f6-8863-f926873cd864
 # ╠═4946ce77-2e55-4d0f-ba18-77696f48c806
-# ╠═6f2c7114-2874-4827-b6c6-228bc66e2203
 # ╠═4155e7d0-a9f6-11eb-1cf4-ff8e390713db
 # ╠═474e20d1-fce7-4d63-95b5-511af903b2a9
 # ╠═e8c93954-54f7-4969-824c-34703328737b

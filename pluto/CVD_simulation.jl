@@ -42,7 +42,7 @@ begin
 end
 
 # ╔═╡ 7d169a7b-3554-46ad-a97e-9a7337a05cae
-function deficiency(deftype::Symbol, c::Spectrum, illum::LSpec = D65_illuminant() , shift::Real = 0.0)
+function deficiency(deftype::Symbol, c::Spectrum, illum::LSpec = D65_illuminant() , shift::Float64 = 0.0)
     cflms = conefund(SPECENV.cmf)
     if deftype == :protanopia
         #Acvd.l = zeros(length(Acvd.l))

@@ -269,7 +269,8 @@ function colorvisiondeficiency(model::Symbol, deftype::Symbol, c::Spectrum, illu
     # B = metameric_black(illum, c, cf)
     # Rlms = matrix_R(cf)
     # Rcvd = matrix_R(Acvd)
-    diff = tristimulus(illum::LSpec, rad::Spectrum, match = conefund(SPECENV.cmf),:linear)
+
+    diff = tristimulus(illum::LSpec, rad::Spectrum, conefund(SPECENV.cmf),:linear)
     env = SPECENV
     λc = collect(env.λmin:env.Δλ:env.λmax)
     Wee = luminance_spec(λc, ones(Float64,length(λc)))

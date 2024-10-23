@@ -10,7 +10,7 @@ Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 SSpline = "2af119c3-c25b-4fc0-9954-fcf9b1025488"
 
 [compat]
-Plots = "1.7"
+SSpline = "0.1.6"
 julia = "1"
 
 [extras]

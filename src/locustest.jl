@@ -10,7 +10,7 @@ function locustest()
     y=zeros(length(lambdas))
     z=zeros(length(lambdas))
     @inbounds for w in 0.1:10.0:400.1
-        @inbounds for i in 1:length(lambdas)
+        @inbounds for i in eachindex(lambdas)
             ill=led_spec(360.0,830.0,1.0,lambdas[i],w)
             color = convert(xyY,ill*col)
             x[i] = color.x

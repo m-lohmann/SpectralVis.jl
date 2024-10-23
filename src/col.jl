@@ -261,7 +261,7 @@ function getslice(x,z,y,sl,type)
     xz=0.0
     yz=0.0
     #go throuhg all runs
-    for i in 1:length(x)
+    for i in eachindex(x)
         l=length(x[i])
         @inbounds for j in 1:l-1
             yt=y[i][j]
@@ -299,7 +299,7 @@ end
 
 function sortslice(a,b,c,xz,yz)
     r=Array{Float64,2}(undef,length(a),4)
-    @inbounds for i in 1:length(a)
+    @inbounds for i in eachindex(a)
         rr,αα = polar(a[i],b[i],xz,yz)
         r[i,1]=αα
         r[i,2]=rr

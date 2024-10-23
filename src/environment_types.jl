@@ -42,6 +42,10 @@ end
 # Set spectral environment to default settings
 global SPECENV=set_specenv()
 
+# alias
+env = SPECENV
+
+
 """
 `set_extrap(env::SpecEnvironment,extrapolation::Symbol)`
 

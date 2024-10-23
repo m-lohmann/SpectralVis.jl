@@ -1,11 +1,12 @@
-__precompile__()
+#__precompile__()
 module SpectralVis
     # Write your package code here.
     import Base.convert
     import Base: +, -, *, /
 
 using Reexport
-    @reexport using SSpline, Colors, Base#, Plots
+    #@reexport
+    using SSpline, Colors, Base#, Plots
     # environment types
     export  SPECENV, SpecEnvironment, set_specenv, set_extrap, set_limits, set_colormatch,
 
@@ -37,7 +38,7 @@ using Reexport
     LMS2006_2, LMS2006_10,
     
     # spectra
-    mars_sky_opportunity, mer_caltarget, pancam, pancam_L2, pancam_L3, pancam_L4, pancam_L5, pancam_L6, pancam_L7, macbeth, munsell_specs, munsell_spec, munsell_keys,munsell_dict, wratten, wratten_filter, WrattenVis, WrattenIR, Wrattenfilters, mineral_specs, mineral, agfait_specs, agfait, vantablack,
+    mars_sky_opportunity, mer_caltarget, pancam, macbeth, munsell_specs, munsell_spec, munsell_keys, munsell_dict, wratten, wratten_filter, WrattenVis, WrattenIR, Wrattenfilters, mineral_specs, mineral, agfait_specs, agfait, vantablack,
     
     # spectral generator tables
     daylight_generator_table, b_c_series_table, f_series_table, gas_discharge_table, water_constants,
@@ -89,6 +90,8 @@ using Reexport
     include(joinpath(specpath,"spectrum_Pancam.jl"))
     include(joinpath(specpath,"spectrum_MacBeth.jl"))
     include(joinpath(specpath,"spectrum_Wratten.jl"))
+    # Vantablack spectrum
+    include(joinpath(specpath,"vantablack.jl"))
     # Other spectra and reading functions
     include(joinpath(specpath,"specread_munsell.jl"))
     include(joinpath(specpath,"specread_mineral.jl"))

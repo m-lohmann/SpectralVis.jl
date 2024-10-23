@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.4
+# v0.20.0
 
 using Markdown
 using InteractiveUtils
@@ -21,14 +21,13 @@ import Pkg
 Pkg.add("PlutoUI")
 
 # ╔═╡ e6ec51dc-4ac7-4ab5-96ce-a40c6c78fbf4
-Pkg.add(path = "c:/Users/4vektor/.julia/dev/SSPline")
-
+Pkg.add(url="https://github.com/m-lohmann/SSpline.jl");
 
 # ╔═╡ 8365b3e1-fd95-45cd-81b7-3a9aa2155296
-Pkg.add(path = "c:/Users/4vektor/.julia/dev/SpectralVis")
+Pkg.add(url="https://github.com/m-lohmann/SpectralVis.jl");
 
 # ╔═╡ f8c56346-91d2-4996-927e-c43828d1adb3
-Pkg.add("GLMakie")
+using Plots
 
 # ╔═╡ 37080ff2-a3b7-11eb-3634-af524d492479
 using PlutoUI
@@ -42,10 +41,13 @@ using SSpline
 # ╔═╡ d2f759bf-2f78-403f-989e-a35b2e2c7a84
 using SpectralVis
 
+# ╔═╡ 8a6d2072-aa2e-4ab6-b978-327a429c427f
+#Pkg.add(PyPlot)
+
 # ╔═╡ 201148e9-e528-435e-afc8-9e4390e2729d
 #plotlyjs()
 #plotly()
-pyplot()
+#pyplot()
 
 # ╔═╡ 22394b49-4e75-444e-b19f-1bfc637dbe98
 md"Cell width:"
@@ -69,7 +71,10 @@ end
 isa(cmfunc, SpectralVis.CIE12_2)
 
 # ╔═╡ 07f523c0-dda4-4e52-b13b-840a8de69648
+# ╠═╡ disabled = true
+#=╠═╡
 shift_colormatch(conefund(:cie12_2),:l,0.0)
+  ╠═╡ =#
 
 # ╔═╡ 28c0b9e7-9faa-4814-8e1d-5c67a58dfe14
 md"Cubic spline interpolation and extrapolations to mach the CMF range:"
@@ -254,6 +259,9 @@ begin
     colorpatch=RSpec(l,s)
 end
 
+# ╔═╡ 5bb37f2b-95c7-4306-9702-1d6b2569733b
+mbcolorpatch
+
 # ╔═╡ 4d5584ab-2ed2-4831-8b5e-9c766a59c4a5
 begin
 	index=parse(Int,patch)
@@ -339,6 +347,7 @@ end
 # ╠═42365ff1-b3c1-4274-9ab3-4cecab55f14b
 # ╠═e6ec51dc-4ac7-4ab5-96ce-a40c6c78fbf4
 # ╠═8365b3e1-fd95-45cd-81b7-3a9aa2155296
+# ╠═8a6d2072-aa2e-4ab6-b978-327a429c427f
 # ╠═f8c56346-91d2-4996-927e-c43828d1adb3
 # ╠═37080ff2-a3b7-11eb-3634-af524d492479
 # ╠═1fc56f02-306a-459c-a120-e5a5d3639ea0
@@ -354,6 +363,7 @@ end
 # ╟─28c0b9e7-9faa-4814-8e1d-5c67a58dfe14
 # ╟─54dfc832-dcc2-463c-9be9-ba785f0fec30
 # ╠═e9951abb-915a-4799-8ed7-5c97490e8c8e
+# ╠═5bb37f2b-95c7-4306-9702-1d6b2569733b
 # ╟─455c4526-1dd0-461d-a40d-d4c9be7b9c2c
 # ╟─c71b58d4-a969-4153-ade5-3ee27044b482
 # ╟─d96a11d2-6321-4b88-9798-9809533a734f

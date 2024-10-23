@@ -31,12 +31,13 @@ results in a luminance spectrum `LSpec` due to an illuminant spectrum reflected 
 
 Result: `LSpec`
 """
-function *(a::LSpec,b::RSpec)
+function *(a::LSpec, b::RSpec)
     luminance_spec(a.λ, a.l .* b.r)
 end
 
 *(a::LSpec, b::RSpec, c...) = *((a * b), c...)
 
+*(a::RSpec, b::Lspec) = *(a::LSpec, b::RSpec)
 
 """
     *(a::LSpec, a::TSpec)
@@ -204,7 +205,7 @@ function *(l::LSpec, t::TSpec, cmf::CMatch)
 end
 
 """
-    (a::Array{Real,2}, c::ConeFund)
+    *(a::Array{Real,2}, c::ConeFund)
 
 Convert cone fundamentals to CMFs.
 """
