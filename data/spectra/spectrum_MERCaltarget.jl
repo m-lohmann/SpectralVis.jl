@@ -20,7 +20,6 @@ function mer_caltarget(color::Symbol)
    throw(DomainError(color, "Nonexistent MER calibration target color."))
 end
 
-mer_caltarget(:yellow)
 
 """
 `mer_caltarget(color::Int)`

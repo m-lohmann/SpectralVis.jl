@@ -37,7 +37,9 @@ end
 
 *(a::LSpec, b::RSpec, c...) = *((a * b), c...)
 
-*(a::RSpec, b::Lspec) = *(a::LSpec, b::RSpec)
+function *(a::RSpec, b::LSpec)
+    *(b, a)
+end
 
 """
     *(a::LSpec, a::TSpec)

@@ -1,46 +1,32 @@
 ### A Pluto.jl notebook ###
-# v0.19.46
+# v0.20.3
 
 using Markdown
 using InteractiveUtils
 
 # This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
 macro bind(def, element)
+    #! format: off
     quote
         local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
         local el = $(esc(element))
         global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
         el
     end
+    #! format: on
 end
+
+# ╔═╡ 497528d9-69be-471d-ae7b-724bc837578b
+using Pkg;Pkg.add(path = "c:/Users/4vektor/.julia/dev/SSpline")
+
+# ╔═╡ 93b6da1b-bb09-4e34-8da5-9cec483d3966
+Pkg.add(path = "c:/Users/4vektor/.julia/dev/SpectralVis")
+
+# ╔═╡ d243ccbd-aa57-4a5d-9757-35e52139c794
+Pkg.add(["PlutoUI", "Colors", "GLMakie", "PlotlyBase"])
 
 # ╔═╡ accd501b-c865-485b-9c8c-4d7b074b22a3
 using PlutoUI, SpectralVis, SSpline, Colors, Plots
-
-# ╔═╡ 37080ff2-a3b7-11eb-3634-af524d492479
-# ╠═╡ disabled = true
-#=╠═╡
-using Plots
-  ╠═╡ =#
-
-# ╔═╡ 497528d9-69be-471d-ae7b-724bc837578b
-# ╠═╡ disabled = true
-#=╠═╡
-using Pkg;Pkg.add(path = "c:/Users/4vektor/.julia/dev/SSpline")
-  ╠═╡ =#
-
-# ╔═╡ 93b6da1b-bb09-4e34-8da5-9cec483d3966
-#=╠═╡
-Pkg.add(path = "c:/Users/4vektor/.julia/dev/SpectralVis")
-  ╠═╡ =#
-
-# ╔═╡ 6fa5a8b5-06d5-4b7c-bf7d-78f5c0771bdd
-
-
-# ╔═╡ d243ccbd-aa57-4a5d-9757-35e52139c794
-#=╠═╡
-Pkg.add(["PlutoUI", "Colors", "Plots", "GLMakie", "PlotlyBase"])
-  ╠═╡ =#
 
 # ╔═╡ 201148e9-e528-435e-afc8-9e4390e2729d
 #plotlyjs()
@@ -58,7 +44,7 @@ md"Color matching function defined in the spectral environment SPECENV:"
 
 # ╔═╡ 54e4792f-0294-4c58-931b-4c3a5ac624ed
 begin
-	#SPECENV.cmf= SpectralVis.colormatch(CMF2012_2)
+	SPECENV.cmf= SpectralVis.colormatch(CMF2012_2)
 	cmfunc = SPECENV.cmf
 end
 
@@ -258,10 +244,8 @@ end
 source
 
 # ╔═╡ Cell order:
-# ╠═37080ff2-a3b7-11eb-3634-af524d492479
 # ╠═497528d9-69be-471d-ae7b-724bc837578b
 # ╠═93b6da1b-bb09-4e34-8da5-9cec483d3966
-# ╠═6fa5a8b5-06d5-4b7c-bf7d-78f5c0771bdd
 # ╠═d243ccbd-aa57-4a5d-9757-35e52139c794
 # ╠═accd501b-c865-485b-9c8c-4d7b074b22a3
 # ╠═201148e9-e528-435e-afc8-9e4390e2729d

@@ -1,17 +1,19 @@
 ### A Pluto.jl notebook ###
-# v0.20.0
+# v0.20.4
 
 using Markdown
 using InteractiveUtils
 
 # This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
 macro bind(def, element)
+    #! format: off
     quote
         local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
         local el = $(esc(element))
         global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
         el
     end
+    #! format: on
 end
 
 # ╔═╡ d2abcb88-551d-408e-a91c-df75bab86b1d
@@ -24,7 +26,8 @@ Pkg.add("PlutoUI")
 Pkg.add(url="https://github.com/m-lohmann/SSpline.jl");
 
 # ╔═╡ 8365b3e1-fd95-45cd-81b7-3a9aa2155296
-Pkg.add(url="https://github.com/m-lohmann/SpectralVis.jl");
+#Pkg.add(url="https://github.com/m-lohmann/SpectralVis.jl");
+Pkg.add(path="c://users//4vektor//.julia//dev//SpectralVis");
 
 # ╔═╡ f8c56346-91d2-4996-927e-c43828d1adb3
 using Plots
@@ -81,6 +84,9 @@ md"Cubic spline interpolation and extrapolations to mach the CMF range:"
 
 # ╔═╡ 54dfc832-dcc2-463c-9be9-ba785f0fec30
 md"colorpatch:"
+
+# ╔═╡ 5bb37f2b-95c7-4306-9702-1d6b2569733b
+macbethspec=macbeth(:Macbeth_chart1,:yellow)
 
 # ╔═╡ 455c4526-1dd0-461d-a40d-d4c9be7b9c2c
 md"##### Definitions of source and destination white points and illuminant spectra:"
@@ -259,9 +265,6 @@ begin
     colorpatch=RSpec(l,s)
 end
 
-# ╔═╡ 5bb37f2b-95c7-4306-9702-1d6b2569733b
-mbcolorpatch
-
 # ╔═╡ 4d5584ab-2ed2-4831-8b5e-9c766a59c4a5
 begin
 	index=parse(Int,patch)
@@ -365,7 +368,7 @@ end
 # ╠═e9951abb-915a-4799-8ed7-5c97490e8c8e
 # ╠═5bb37f2b-95c7-4306-9702-1d6b2569733b
 # ╟─455c4526-1dd0-461d-a40d-d4c9be7b9c2c
-# ╟─c71b58d4-a969-4153-ade5-3ee27044b482
+# ╠═c71b58d4-a969-4153-ade5-3ee27044b482
 # ╟─d96a11d2-6321-4b88-9798-9809533a734f
 # ╠═e94743af-b474-4801-ac3e-53703c4ab56b
 # ╟─27c3f7c1-afc6-4095-86a2-85c4651ab75d

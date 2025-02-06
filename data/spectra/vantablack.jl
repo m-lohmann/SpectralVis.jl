@@ -4,7 +4,7 @@
 Vantablack spectrum from 264.6 to 16310.0 nm
 """
 function vantablack()
-    RSpec(vantablack[:,1],vantablack[:,2])
+    RSpec(vantablack_spec[:,1],vantablack_spec[:,2])
 end
 
 #= Vantablack hemispherical reflectance spectrum from 264.6 to 16310.0 nm
@@ -19,7 +19,7 @@ end
 
 =#
 
-const vantablack =
+const vantablack_spec =
        [264.6    0.00591;
         273.8    0.00594;
         284.6    0.00594;

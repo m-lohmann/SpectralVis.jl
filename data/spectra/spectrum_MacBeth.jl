@@ -1,5 +1,5 @@
 """
-`macbeth(colorchart::Symbol,color::Symbol)`
+    macbeth(colorchart::Symbol,color::Symbol,mode = :raw)
 
 returns `RSpec` of one of the 24 MacBeth color patches of a given name.
 
@@ -21,8 +21,9 @@ available color names:
 
 :white95, :neutral8, :neutral65, :neutral5, :neutral35, :black2
 """
-function macbeth(colorchart::Symbol,color::Symbol,mode = :raw)
+function macbeth(colorchart::Symbol,color::Symbol,mode = :interp)
     chart = eval(colorchart)
+    sp = 
     color == :darkskin ? reflectance_spec(chart[:,1],chart[:,2]) :
     color == :lightskin ? reflectance_spec(chart[:,1],chart[:,3]) :
     color == :bluesky ? reflectance_spec(chart[:,1],chart[:,4]) :
@@ -47,14 +48,17 @@ function macbeth(colorchart::Symbol,color::Symbol,mode = :raw)
     color == :neutral5 ? reflectance_spec(chart[:,1],chart[:,23]) :
     color == :neutral35 ? reflectance_spec(chart[:,1],chart[:,24]) :
     color == :black2 ? reflectance_spec(chart[:,1],chart[:,25]) : error("Color does not exist.")
+
     if mode == :raw
-        return color
+        s = spline3(sp.λ,sp.r,:natural)
+        return interp(s,sp.λ[1]:SPECENV.Δλ:sp.λ[end])
     elseif mode == :interp
-        s = spline3(color[1],color[2],:natural)
+        s = spline3(sp.λ,sp.r,:natural)
         e = extrap(s,SPECENV.λmin:SPECENV.λmax,:quadratic)
         return interp(e,SPECENV.λmin:SPECENV.Δλ:SPECENV.λmax)
     end
 end
+
 
 """
 `macbeth(colorchart::Symbol,num::Int)`
@@ -108,7 +112,7 @@ function mbspec(colorchart::Symbol, num::Int)
 end
 
 """
-`mbcolor(spec::RSpec,illum::LSpec)`
+    mbcolor(spec::RSpec,illum::LSpec)
 
 returns XYZ color according to illuminant
 """
